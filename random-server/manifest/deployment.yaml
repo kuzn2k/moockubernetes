@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: random-server
+  template:
+    metadata:
+      labels:
+        app: random-server
+    spec:
+      containers:
+        - name: app
+          image: kuzn2k/random-server:1.0.0
+          env:
+            - name: PORT
+              value: "3000"
