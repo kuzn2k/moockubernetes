@@ -1,7 +1,7 @@
 {
   "name": "todo-server",
-  "version": "1.0.0",
-  "description": "Exercise 1.2",
+  "version": "1.0.1",
+  "description": "TODO Server for MOOC's exercises",
   "private": true,
   "type": "module",
   "scripts": {

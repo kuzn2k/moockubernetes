@@ -1,13 +1,7 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ex1-4
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: todo-server
-  namespace: ex1-4
 spec:
   replicas: 1
   selector:
@@ -20,4 +14,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: kuzn2k/ex1.2-todo-server:1.0.0
+          image: kuzn2k/todo-server:1.0.1
+          env:
+            - name: PORT
+              value: "3000"

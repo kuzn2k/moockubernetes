@@ -8,8 +8,6 @@ COPY package-lock.json /app
 
 RUN npm install
 
-ENV PORT=4000
-
 ENTRYPOINT [ "node" ]
 
 CMD ["/app/server.js"]
