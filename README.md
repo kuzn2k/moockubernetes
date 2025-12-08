@@ -9,3 +9,4 @@
 - [1.5.] (https://github.com/kuzn2k/moockubernetes/tree/1.5/todo-server)
 - [1.6.] (https://github.com/kuzn2k/moockubernetes/tree/1.6/todo-server)
 - [1.7.] (https://github.com/kuzn2k/moockubernetes/tree/1.7/random-server)
+- [1.8.] (https://github.com/kuzn2k/moockubernetes/tree/1.8/todo-server)

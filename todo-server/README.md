@@ -10,6 +10,6 @@ kubectl logs -f deloyment/todo-server
 
 ## Open sample page
 
-Open url http://localhost:8082
+Open url http://localhost:8081
 
 
