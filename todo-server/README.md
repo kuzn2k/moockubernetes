@@ -2,11 +2,14 @@
 
 ## Start server
 
-kubectl apply -f manifest/deployment.yaml
-
-default port is 3000 specified in deployment.yaml
+kubectl apply -f manifest
 
 ## Check logs
 
 kubectl logs -f deloyment/todo-server
+
+## Open sample page
+
+Open url http://localhost:8082
+
 
