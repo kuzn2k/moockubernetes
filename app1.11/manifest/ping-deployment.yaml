@@ -15,7 +15,7 @@ spec:
       volumes:
         - name: shared-files
           persistentVolumeClaim:
-            claimName: files-claim
+            claimName: app-storage-claim
       containers:
         - name: app
           image: kuzn2k/ping-pong-server:1.0.1

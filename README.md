@@ -12,3 +12,4 @@
 - [1.8.] (https://github.com/kuzn2k/moockubernetes/tree/1.8/todo-server)
 - [1.9.] (https://github.com/kuzn2k/moockubernetes/tree/1.9/ping-pong)
 - [1.10.] (https://github.com/kuzn2k/moockubernetes/tree/1.10/random-server)
+- [1.11.] (https://github.com/kuzn2k/moockubernetes/tree/1.11/app1.11)
