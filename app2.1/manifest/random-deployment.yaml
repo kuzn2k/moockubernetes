@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: random-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: random-server
+  template:
+    metadata:
+      labels:
+        app: random-server
+    spec:
+      volumes:
+        - name: shared-files
+          persistentVolumeClaim:
+            claimName: app-storage-claim
+      containers:
+        - name: endpoint
+          image: kuzn2k/random-server:1.0.3
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "3000"
+          volumeMounts:
+            - name: shared-files
+              mountPath: /var/tmp/mooc/files            
+        - name: log-output
+          image: kuzn2k/log-output:1.0.1
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: shared-files
+              mountPath: /var/tmp/mooc/files            

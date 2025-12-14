@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ping-pong-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-pong-server
+  template:
+    metadata:
+      labels:
+        app: ping-pong-server
+    spec:
+      containers:
+        - name: app
+          image: kuzn2k/ping-pong-server:1.0.2
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "3000"
+          ports:
+            - name: ping-port
+              containerPort: 3000

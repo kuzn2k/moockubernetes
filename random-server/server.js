@@ -21,10 +21,15 @@ async function loadRandomHash() {
 
 async function loadCount() {
   try {
-    const txt = await fs.readFile(COUNT_FILE, 'utf8')
-    return txt.trim() || null
+    const res = await fetch("http://ping-pong-service-svc:2345/pings")
+    if (!res.ok) {
+      console.error('Failed fetching pings', res.status, res.statusText)
+      return null
+    }
+    const { count } = await res.json()
+    return count
   } catch (err) {
-    console.error(err)
+    console.error('Error fetching external image', err)
     return null
   }
 }
