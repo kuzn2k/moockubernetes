@@ -12,9 +12,17 @@ spec:
       labels:
         app: todo-server
     spec:
+      volumes:
+        - name: shared-files
+          persistentVolumeClaim:
+            claimName: app-storage-claim    
       containers:
         - name: app
-          image: kuzn2k/todo-server:1.0.1
+          image: kuzn2k/todo-server:1.0.2
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: shared-files
+              mountPath: /var/tmp/mooc/files          
           env:
             - name: PORT
               value: "3000"
