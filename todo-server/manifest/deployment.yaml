@@ -18,7 +18,7 @@ spec:
             claimName: app-storage-claim    
       containers:
         - name: app
-          image: kuzn2k/todo-server:1.0.2
+          image: kuzn2k/todo-server:1.0.3
           imagePullPolicy: Always
           volumeMounts:
             - name: shared-files
