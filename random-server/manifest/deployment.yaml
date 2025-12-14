@@ -12,9 +12,22 @@ spec:
       labels:
         app: random-server
     spec:
+      volumes:
+        - name: shared-files
+          emptyDir: {}
       containers:
-        - name: app
-          image: kuzn2k/random-server:1.0.0
+        - name: endpoint
+          image: kuzn2k/random-server:1.0.1
+          imagePullPolicy: Always
           env:
             - name: PORT
               value: "3000"
+          volumeMounts:
+            - name: shared-files
+              mountPath: /var/tmp/mooc/files            
+        - name: log-output
+          image: kuzn2k/log-output:1.0.1
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: shared-files
+              mountPath: /var/tmp/mooc/files            

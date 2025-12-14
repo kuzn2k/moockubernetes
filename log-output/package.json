@@ -1,7 +1,7 @@
 {
   "name": "log-output",
-  "version": "1.0.0",
-  "description": "Exerces 1.1",
+  "version": "1.0.1",
+  "description": "Exerces 1.10",
   "private": true,
   "type": "module",
   "scripts": {

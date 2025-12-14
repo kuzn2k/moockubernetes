@@ -1,35 +1,46 @@
 import Fastify from 'fastify'
-import { randomUUID } from 'crypto'
+import fs from 'fs/promises'
+import path from 'path'
 
+const DATA_DIR = path.resolve(new URL('.', import.meta.url).pathname, '/var/tmp/mooc/files')
+const DATA_FILE = path.join(DATA_DIR, 'random.txt')
 
-function getRandomHash() {
-    return randomUUID()
+async function ensureDataDir() {
+  try { await fs.mkdir(DATA_DIR, { recursive: true }) } catch { /* ignore */ }
 }
 
-function getTimestamp(hash) {
+async function loadRandomHash() {
+  try {
+    const txt = await fs.readFile(DATA_FILE, 'utf8')
+    return txt.trim() || null
+  } catch (err) {
+    return null
+  }
+}
+
+function getTimestampString(hash) {
     const timestamp = new Date().toISOString()
     return `${timestamp}: ${hash}`
 }
 
-let randomString = getRandomHash()
+ensureDataDir()
 
 const fastify = Fastify({
   logger: true
 })
 
-fastify.get('/', function (request, reply) {
-  reply.header('Content-Type', 'text/plain');
-  reply.send(getTimestamp(randomString))
+fastify.get('/', async function (request, reply) {
+  reply.header('Content-Type', 'text/plain')
+  const rs = await loadRandomHash()
+  reply.send(getTimestampString(rs))
 })
-
-setInterval(() => { randomString = getRandomHash() }, 5000);
 
 const port = process.env.PORT || 3000
 
 const start = async () => {
   try {
 
-    await fastify.listen({ port: port, host: '0.0.0.0' })
+    fastify.listen({ port: port, host: '0.0.0.0' })
 
   } catch (err) {
     fastify.log.error(err)
