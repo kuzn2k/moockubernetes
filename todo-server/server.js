@@ -81,6 +81,71 @@ const htmlTemplate = `
       ul.todolist{font-size:18px}
     }
   </style>
+
+  <script>
+    async function addTodo() {
+      const inputEl = document.getElementById('todo-input');
+      if (!inputEl) return;
+
+      const v = inputEl.value.trim().slice(0, 140);
+      if (!v) return;
+
+      try {
+        const res = await fetch('/todos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title: v })
+        });
+
+        if (!res.ok) {
+          console.error('Failed to create todo', res.status);
+          return;
+        }
+
+        const created = await res.json();
+        const ul = document.getElementById('todo-list');
+        const li = document.createElement('li');
+        li.textContent = created.title || v;
+        ul.appendChild(li);
+
+        inputEl.value = '';
+        inputEl.focus();
+        const charCountEl = document.getElementById('char-count');
+        charCountEl.innerText = '0/140';
+      } catch (err) {
+        console.error('Network error', err);
+      }
+    }
+
+    async function getTodoList() {
+      try {
+        const res = await fetch('/todos');
+        if (!res.ok) {
+          console.error('Failed fetching todos', res.status, res.statusText);
+          return null;
+        }
+        const data = await res.json();
+        return Array.isArray(data) ? data : data.list ?? null;
+      } catch (err) {
+        console.error('Error fetching todo list', err);
+        return null;
+      }
+    }
+
+    window.addEventListener('load', async () => {
+      const todoList = await getTodoList();
+
+      const ul = document.getElementById('todo-list');
+
+      if (!todoList || todoList.length === 0) return;
+
+      todoList.forEach((value) => {
+        const li = document.createElement('li');
+        li.textContent = value.title ?? String(value);
+        ul.appendChild(li);
+      });
+    });
+  </script>
 </head>
 <body>
   <main class="wrap">
@@ -94,14 +159,12 @@ const htmlTemplate = `
       </figure>
 
       <form class="controls" action="/todos" method="post" onsubmit="event.preventDefault(); addTodo();">
-        <input id="todo-input" type="text" maxlength="140" placeholder="Add todo..." aria-label="New todo">
+        <input id="todo-input" type="text" maxlength="140" placeholder="Add todo..." aria-label="New todo" aria-describedby="char-count">
         <button type="submit">Create todo</button>
+        <div id="char-count" style="font-size:13px;color:#666;margin-left:8px">0/140</div>
       </form>
 
       <ul class="todolist" id="todo-list" aria-live="polite">
-        <li>Learn JavaScript</li>
-        <li>Learn React</li>
-        <li>Build a project</li>
       </ul>
 
       <div class="caption">DevOps with Kubernetes 2025</div>
@@ -109,16 +172,15 @@ const htmlTemplate = `
   </main>
 
   <script>
-    function addTodo(){
-      const input = document.getElementById('todo-input')
-      const v = (input.value || '').trim()
-      if (!v) return
-      const ul = document.getElementById('todo-list')
-      const li = document.createElement('li')
-      li.textContent = v
-      ul.appendChild(li)
-      input.value = ''
-      input.focus()
+    const inputEl = document.getElementById('todo-input');
+    const charCountEl = document.getElementById('char-count');
+
+    if (!inputEl) {
+      console.error('todo input not found')
+    } else {
+      inputEl.addEventListener('input', () => {
+        charCountEl.innerText = inputEl.value.length + '/140' 
+      });
     }
   </script>
 </body>

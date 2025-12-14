@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-server
+  template:
+    metadata:
+      labels:
+        app: todo-server
+    spec:
+      volumes:
+        - name: shared-files
+          persistentVolumeClaim:
+            claimName: app-storage-claim    
+      containers:
+        - name: app
+          image: kuzn2k/todo-server:1.0.4
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: shared-files
+              mountPath: /var/tmp/mooc/files          
+          env:
+            - name: PORT
+              value: "3000"
+          ports:
+            - name: todo-port
+              containerPort: 3000

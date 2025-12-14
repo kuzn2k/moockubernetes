@@ -2,18 +2,15 @@
 
 ## Build app
 
-    docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
-    docker build -t kuzn2k/todo-server:1.0.3
-    docker push kuzn2k/todo-server:1.0.3
-
-## Deploy server
-
-    kubectl apply -f ../system
-    kubectl apply -f manifest
-
+ ````bash
+docker build -t kuzn2k/todo-server:1.0.4 .
+docker push kuzn2k/todo-server:1.0.4
+````
 ## Check logs
 
-    kubectl logs -f deloyment/todo-server
+````bash
+kubectl logs -f deloyment/todo-server
+````
 
 ## Open sample page
 
