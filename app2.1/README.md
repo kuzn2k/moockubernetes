@@ -20,7 +20,7 @@ docker push kuzn2k/ping-pong-server:1.0.2
 
 ````bash
 docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
-kubectl apply -f ../system
+kubectl apply -f ../system-exercises
 kubectl apply -f manifest
 ````
 

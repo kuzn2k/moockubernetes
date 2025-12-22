@@ -10,5 +10,5 @@ docker push kuzn2k/todo-backend:1.0.0
 ## Check logs
 
 ````bash
-kubectl logs -f deloyment/todo-backend
+kubectl logs -f deployment/todo-backend
 ````

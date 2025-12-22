@@ -16,7 +16,7 @@ docker push kuzn2k/todo-server:1.0.4
 
 ````bash
 docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
-kubectl apply -f ../system
+kubectl apply -f ../system-project
 kubectl apply -f manifest
 ````
 

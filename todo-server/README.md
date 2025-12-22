@@ -9,7 +9,7 @@ docker push kuzn2k/todo-server:1.0.4
 ## Check logs
 
 ````bash
-kubectl logs -f deloyment/todo-server
+kubectl logs -f deployment/todo-server
 ````
 
 ## Open sample page

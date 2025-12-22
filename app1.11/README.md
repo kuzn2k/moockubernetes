@@ -17,7 +17,7 @@
 ## Deploy app
 
     docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
-    kubectl apply -f ../system
+    kubectl apply -f ../system-exercises
     kubectl apply -f manifest
 
 ## Open log-output page
