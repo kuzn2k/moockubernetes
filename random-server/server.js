@@ -4,7 +4,9 @@ import path from 'path'
 
 const DATA_DIR = path.resolve(new URL('.', import.meta.url).pathname, '/var/tmp/mooc/files')
 const DATA_FILE = path.join(DATA_DIR, 'random.txt')
-const COUNT_FILE = path.join(DATA_DIR, 'count.txt')
+
+const CONFIG_DIR = path.resolve(new URL('.', import.meta.url).pathname, '/config')
+const INFO_FILE = path.join(CONFIG_DIR, 'information.txt')
 
 async function ensureDataDir() {
   try { await fs.mkdir(DATA_DIR, { recursive: true }) } catch { /* ignore */ }
@@ -13,6 +15,15 @@ async function ensureDataDir() {
 async function loadRandomHash() {
   try {
     const txt = await fs.readFile(DATA_FILE, 'utf8')
+    return txt.trim() || null
+  } catch (err) {
+    return null
+  }
+}
+
+async function loadInformationFile() {
+  try {
+    const txt = await fs.readFile(INFO_FILE, 'utf8')
     return txt.trim() || null
   } catch (err) {
     return null
@@ -49,7 +60,8 @@ fastify.get('/', async function (request, reply) {
   reply.header('Content-Type', 'text/plain')
   const rs = await loadRandomHash()
   const count = await loadCount()
-  const message = `${getTimestampString(rs)}.\nPing / Pongs: ${count}`
+  const infoText = await loadInformationFile()
+  const message = `file content: ${infoText}\nenv variable: MESSAGE=${process.env.MESSAGE || 'N/A'}\n${getTimestampString(rs)}.\nPing / Pongs: ${count}`
   reply.send(message)
 })
 

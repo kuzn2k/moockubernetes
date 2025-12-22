@@ -1,6 +1,6 @@
 {
   "name": "random-server",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Random string Server for MOOC's exercises",
   "private": true,
   "type": "module",
