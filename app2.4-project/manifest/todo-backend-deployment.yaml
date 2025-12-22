@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: project
+  name: todo-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-backend
+  template:
+    metadata:
+      labels:
+        app: todo-backend
+    spec:
+      containers:
+        - name: app
+          image: kuzn2k/todo-backend:1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "3000"
+          ports:
+            - name: todo-bc-port
+              containerPort: 3000

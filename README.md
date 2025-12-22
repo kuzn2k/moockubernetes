@@ -21,3 +21,5 @@
 - [2.1.] (https://github.com/kuzn2k/moockubernetes/tree/2.1/app2.1)
 - [2.2.] (https://github.com/kuzn2k/moockubernetes/tree/2.2/app2.2)
 - [2.3.] (https://github.com/kuzn2k/moockubernetes/tree/2.3/log-output)
+- [2.4.] (https://github.com/kuzn2k/moockubernetes/tree/2.4/app2.4-project)
+
