@@ -1,8 +1,7 @@
 {
-  "name": "todo-backend",
-  "version": "1.0.0",
-  "description": "TODO Backend application for MOOC's Kubernetes course",
-  "main": "server.js",
+  "name": "todo-server",
+  "version": "1.0.5",
+  "description": "TODO Server for MOOC's exercises",
   "private": true,
   "type": "module",
   "scripts": {

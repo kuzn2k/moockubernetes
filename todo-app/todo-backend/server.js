@@ -1,5 +1,7 @@
 import Fastify from 'fastify'
 
+const todosUrl = process.env.TODOS_URL
+
 const fastify = Fastify({
   logger: true
 })
@@ -7,11 +9,11 @@ const fastify = Fastify({
 const todoList = []
 let lastId = 0
 
-fastify.get('/todos', (request, reply) => {
+fastify.get(todosUrl, (request, reply) => {
   reply.send({size: todoList.length, list: todoList})
 })
 
-fastify.post('/todos', {
+fastify.post(todosUrl, {
   schema: {
     body: {
       type: 'object',

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: project
+  name: todo-app-config
+data:
+  todos_url: "/todos"
+  image_url: "/image"
+  data_root: "/var/tmp/mooc/files"
+  tmp_image_file: "current-image.jpg"
+  image_service_url: "https://picsum.photos/"
+  image_size: "1200"
+  max_todo_length: "140"
+  refresh_time: "600"
+
+  

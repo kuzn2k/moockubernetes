@@ -2,8 +2,15 @@ import Fastify from 'fastify'
 import fs from 'fs/promises'
 import path from 'path'
 
-const DATA_DIR = path.resolve(new URL('.', import.meta.url).pathname, '/var/tmp/mooc/files')
-const IMAGE_FILE = "current-image.jpg"
+const DATA_ROOT = process.env.DATA_ROOT
+const todosUrl = process.env.TODOS_URL
+const DATA_DIR = path.resolve(new URL('.', import.meta.url).pathname, DATA_ROOT)
+const IMAGE_FILE = process.env.TMP_IMAGE_FILE
+const imageUrl = process.env.IMAGE_URL
+const IMAGE_SERVICE_URL = process.env.IMAGE_SERVICE_URL
+const IMAGE_SIZE = process.env.IMAGE_SIZE
+const MAX_TODO_LENGTH = process.env.MAX_TODO_LENGTH
+const REFRESH_TIME = process.env.REFRESH_TIME
 
 const htmlTemplate = `
 <!doctype html>
@@ -87,11 +94,11 @@ const htmlTemplate = `
       const inputEl = document.getElementById('todo-input');
       if (!inputEl) return;
 
-      const v = inputEl.value.trim().slice(0, 140);
+      const v = inputEl.value.trim().slice(0, ${MAX_TODO_LENGTH});
       if (!v) return;
 
       try {
-        const res = await fetch('/todos', {
+        const res = await fetch('${todosUrl}', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title: v })
@@ -111,7 +118,7 @@ const htmlTemplate = `
         inputEl.value = '';
         inputEl.focus();
         const charCountEl = document.getElementById('char-count');
-        charCountEl.innerText = '0/140';
+        charCountEl.innerText = '0/${MAX_TODO_LENGTH}';
       } catch (err) {
         console.error('Network error', err);
       }
@@ -119,7 +126,7 @@ const htmlTemplate = `
 
     async function getTodoList() {
       try {
-        const res = await fetch('/todos');
+        const res = await fetch('${todosUrl}');
         if (!res.ok) {
           console.error('Failed fetching todos', res.status, res.statusText);
           return null;
@@ -155,13 +162,13 @@ const htmlTemplate = `
 
     <section>
       <figure>
-        <img class="hero-img" src="/image" alt="Current image">
+        <img class="hero-img" src="${imageUrl}" alt="Current image">
       </figure>
 
-      <form class="controls" action="/todos" method="post" onsubmit="event.preventDefault(); addTodo();">
-        <input id="todo-input" type="text" maxlength="140" placeholder="Add todo..." aria-label="New todo" aria-describedby="char-count">
+      <form class="controls" action="${todosUrl}" method="post" onsubmit="event.preventDefault(); addTodo();">
+        <input id="todo-input" type="text" maxlength="${MAX_TODO_LENGTH}" placeholder="Add todo..." aria-label="New todo" aria-describedby="char-count">
         <button type="submit">Create todo</button>
-        <div id="char-count" style="font-size:13px;color:#666;margin-left:8px">0/140</div>
+        <div id="char-count" style="font-size:13px;color:#666;margin-left:8px">0/${MAX_TODO_LENGTH}</div>
       </form>
 
       <ul class="todolist" id="todo-list" aria-live="polite">
@@ -179,7 +186,7 @@ const htmlTemplate = `
       console.error('todo input not found')
     } else {
       inputEl.addEventListener('input', () => {
-        charCountEl.innerText = inputEl.value.length + '/140' 
+        charCountEl.innerText = inputEl.value.length + '/${MAX_TODO_LENGTH}' 
       });
     }
   </script>
@@ -208,9 +215,9 @@ async function loadImage(name) {
   }
 }
 
-async function getNewImage(size = 1200) {
+async function getNewImage(size = IMAGE_SIZE) {
   try {
-    const res = await fetch(`https://picsum.photos/${size}`)
+    const res = await fetch(`${IMAGE_SERVICE_URL}${size}`)
     if (!res.ok) {
       console.error('Failed fetching image', res.status, res.statusText)
       return null
@@ -240,7 +247,7 @@ async function rotateImage(name) {
 
   rotateInProgress = (async () => {
     try {
-      const buf = await getNewImage(1200)
+      const buf = await getNewImage(IMAGE_SIZE)
       if (buf) {
         await saveImage(name, buf)
         outdated = false
@@ -260,7 +267,7 @@ const fastify = Fastify({
   logger: true
 })
 
-fastify.get('/image', async (request, reply) => {
+fastify.get(imageUrl, async (request, reply) => {
   const buf = await loadImage(IMAGE_FILE)
   if (!buf) {
     reply.code(404).send('No image found')
@@ -295,7 +302,7 @@ const start = async () => {
   console.log(`Server started in port ${port}`)
 }
 
-const refreshTime = 10 * 60 * 1000
+const refreshTime = REFRESH_TIME * 1000
 let imageAge = refreshTime
 let outdated = true
 
