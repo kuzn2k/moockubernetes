@@ -10,6 +10,10 @@ docker push kuzn2k/todo-backend:1.0.3
 cd ../todo-server
 docker build -t kuzn2k/todo-server:1.0.5 .
 docker push kuzn2k/todo-server:1.0.5
+
+cd ../todo-reminder
+docker build -t kuzn2k/todo-reminder:1.0.0 .
+docker push kuzn2k/todo-reminder:1.0.0
 ````
 
 ## Provide secrets configuration

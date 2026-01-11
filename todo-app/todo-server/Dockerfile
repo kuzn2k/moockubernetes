@@ -6,7 +6,7 @@ COPY server.js /app
 COPY package.json /app
 COPY package-lock.json /app
 
-RUN npm install
+RUN npm install --production --no-audit --no-fund
 
 ENTRYPOINT [ "node" ]
 

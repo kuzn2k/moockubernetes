@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  namespace: project
+  name: todo-remainder-job
+spec:
+  schedule: "@hourly"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: todo-remainder-job
+            image: kuzn2k/todo-reminder:1.0.0
+            imagePullPolicy: Always
+            env:
+              - name: DB_URL
+                valueFrom:
+                  configMapKeyRef:
+                    name: todo-app-config
+                    key: db_url
+              - name: DB_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: todo-app-config
+                    key: db_port
+              - name: DB_USER
+                valueFrom:
+                  configMapKeyRef:
+                    name: todo-app-config
+                    key: db_user
+              - name: DB_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: todo-app-secret
+                    key: db_password
+              - name: DB_DATABASE
+                valueFrom:
+                  configMapKeyRef:
+                    name: todo-app-config
+                    key: db_database
