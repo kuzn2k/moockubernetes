@@ -12,5 +12,9 @@ data:
   image_size: "1200"
   max_todo_length: "140"
   refresh_time: "600"
+  db_url: "todo-postgres-svc"
+  db_port: "5432"
+  db_user: "postgres"
+  db_database: "postgres"
 
   

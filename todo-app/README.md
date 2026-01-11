@@ -4,12 +4,19 @@
 
 ````bash
 cd todo-backend
-docker build -t kuzn2k/todo-backend:1.0.2 .
-docker push kuzn2k/todo-backend:1.0.2
+docker build -t kuzn2k/todo-backend:1.0.3 .
+docker push kuzn2k/todo-backend:1.0.3
 
 cd ../todo-server
 docker build -t kuzn2k/todo-server:1.0.5 .
 docker push kuzn2k/todo-server:1.0.5
+````
+
+## Provide secrets configuration
+
+````bash
+cd secrets
+sops -d secret.enc.yaml | kubectl apply -f -
 ````
 
 ## Deploy app

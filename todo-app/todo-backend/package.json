@@ -1,7 +1,7 @@
 {
   "name": "todo-backend",
-  "version": "1.0.2",
-  "description": "TODO Backend application for MOOC's Kubernetes course",
+  "version": "1.0.3",
+  "description": "TODO Backend application for MOOC's Kubernetes course (postgres)",
   "main": "server.js",
   "private": true,
   "type": "module",
@@ -9,7 +9,8 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "fastify": "^5.6.x"
+    "fastify": "^5.6.x",
+    "pg": "^8.10.0"
   },
   "engines": {
     "node": ">=22.17.0 <23"
