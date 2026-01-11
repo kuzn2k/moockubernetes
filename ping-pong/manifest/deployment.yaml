@@ -2,31 +2,34 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: exercises
-  name: ping-pong-server
+  name: ping-pong-db-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ping-pong-server
+      app: ping-pong-db-server
   template:
     metadata:
       labels:
-        app: ping-pong-server
+        app: ping-pong-db-server
     spec:
-      volumes:
-        - name: shared-files
-          persistentVolumeClaim:
-            claimName: files-claim
       containers:
         - name: app
-          image: kuzn2k/ping-pong-server:1.0.1
+          image: kuzn2k/ping-pong-server:1.0.3
           imagePullPolicy: Always
-          volumeMounts:
-            - name: shared-files
-              mountPath: /var/tmp/mooc/files 
           env:
             - name: PORT
               value: "3000"
+            - name: PGHOST
+              value: "postgress-svc"
+            - name: PGPORT
+              value: "5432"
+            - name: PGUSER
+              value: "postgres"
+            - name: PGPASSWORD
+              value: ""
+            - name: PGDATABASE
+              value: "postgres"
           ports:
             - name: ping-port
               containerPort: 3000

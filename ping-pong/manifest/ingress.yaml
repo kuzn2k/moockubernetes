@@ -2,19 +2,19 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   namespace: exercises
-  name: random-server-ingress
+  name: ping-server-ingress
 spec:
   rules:
   - http:
       paths:
-        - path: /
+        - path: /pingpong
           pathType: Prefix
           backend:
             service:
-              name: random-service-svc
+              name: ping-pong-service-svc
               port:
                 number: 2345
-        - path: /pingpong
+        - path: /pings
           pathType: Prefix
           backend:
             service:

@@ -24,4 +24,4 @@
 - [2.4.] (https://github.com/kuzn2k/moockubernetes/tree/2.4/app2.4-project)
 - [2.5.] (https://github.com/kuzn2k/moockubernetes/tree/2.5/app2.5)
 - [2.6.] (https://github.com/kuzn2k/moockubernetes/tree/2.6/todo-app)
-
+- [2.7.] (https://github.com/kuzn2k/moockubernetes/tree/2.7/ping-pong)
