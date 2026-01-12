@@ -62,6 +62,21 @@ fastify.post(todosUrl, {
   reply.code(201).send(todo)
 })
 
+fastify.setErrorHandler(function (error, request, reply) {
+  if (error.validation) {
+    fastify.log.info({ 
+      statusCode: 400, 
+      error: error.message, 
+      validation: error.validation,
+      body: request.body
+    }, 'Validation failed')
+    reply.status(400).send({ error: error.message, validation: error.validation })
+  } else {
+    fastify.log.error(error)
+    reply.send(error)
+  }
+})
+
 const port = process.env.PORT || 3000
 
 const start = async () => {
@@ -72,8 +87,6 @@ const start = async () => {
     fastify.log.error(err)
     process.exit(1)
   }
-
-  console.log(`Server started in port ${port}`)
 }
 
 start()

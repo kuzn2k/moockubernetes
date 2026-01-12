@@ -4,8 +4,8 @@
 
 ````bash
 cd todo-backend
-docker build -t kuzn2k/todo-backend:1.0.3 .
-docker push kuzn2k/todo-backend:1.0.3
+docker build -t kuzn2k/todo-backend:1.0.4 .
+docker push kuzn2k/todo-backend:1.0.4
 
 cd ../todo-server
 docker build -t kuzn2k/todo-server:1.0.5 .
