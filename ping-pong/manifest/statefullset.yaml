@@ -38,6 +38,7 @@ spec:
           volumeMounts:
             - name: postgress-data-storage
               mountPath: /var/lib/postgresql
+              subPath: postgres
           env:
             - name: POSTGRES_HOST_AUTH_METHOD
               value: "trust"
@@ -46,7 +47,7 @@ spec:
         name: postgress-data-storage
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: local-path
+        storageClassName: standard
         resources:
           requests:
-            storage: 20Mi
+            storage: 10Gi

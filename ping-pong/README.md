@@ -1,3 +1,9 @@
+## Create cluster on GKE
+
+````bash
+../gke/create-cluster.sh
+````
+
 ## Build app
 
 ````bash
@@ -13,8 +19,19 @@ kubectl apply -f manifest
 
 ## Open page
 
-Open url for ping pong http://localhost:8081/pingpong
+Check server IP by 
+````bash
+kubectl get svc -n exercises
+````
 
-Get current counter http://localhost:8081/pings
+Open url for ping pong http://<server_ip>/pingpong
+
+Get current counter http://<server_ip>/pings
+
+## Remove cluster after finish
+
+````bash
+../gke/remove-cluster.sh
+````
 
 
