@@ -1,0 +1,22 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  namespace: exercises
+  name: ping-pong-route
+spec:
+  parentRefs:
+  - name: ping-pong-gateway
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    filters:
+    - type: URLRewrite
+      urlRewrite:
+        path:
+          type: ReplacePrefixMatch
+          replacePrefixMatch: /pingpong        
+    backendRefs:
+    - name: ping-pong-service-svc
+      port: 2345      

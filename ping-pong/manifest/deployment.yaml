@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: kuzn2k/ping-pong-server:1.0.3
+          image: kuzn2k/ping-pong-server:1.0.6
           imagePullPolicy: Always
           env:
             - name: PORT

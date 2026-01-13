@@ -2,7 +2,11 @@ import Fastify from 'fastify'
 import { Pool } from 'pg'
 
 const fastify = Fastify({
-  logger: true
+  logger: true,
+  routerOptions: {
+    ignoreTrailingSlash: true,
+    ignoreDuplicateSlashes: true
+  }
 })
 
 const pool = new Pool({

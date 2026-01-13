@@ -7,8 +7,8 @@
 ## Build app
 
 ````bash
-docker build -t kuzn2k/ping-pong-server:1.0.3 .
-docker push kuzn2k/ping-pong-server:1.0.3
+docker build -t kuzn2k/ping-pong-server:1.0.6 .
+docker push kuzn2k/ping-pong-server:1.0.6
 ````
 
 ## Deploy app
@@ -21,12 +21,10 @@ kubectl apply -f manifest
 
 Check server IP by 
 ````bash
-kubectl get svc -n exercises
+kubectl get gateway -n exercises
 ````
 
-Open url for ping pong http://<server_ip>/pingpong
-
-Get current counter http://<server_ip>/pings
+Open url for ping pong http://<server_ip>/
 
 ## Remove cluster after finish
 
