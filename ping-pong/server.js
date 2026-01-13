@@ -55,6 +55,10 @@ fastify.get('/pings', async function (request, reply) {
   reply.send({count: c})
 })
 
+fastify.get('/', async function (request, reply) {
+  reply.send({healthcheck: true})
+})
+
 const port = process.env.PORT || 3000
 
 const start = async () => {

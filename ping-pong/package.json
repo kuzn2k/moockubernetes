@@ -1,6 +1,6 @@
 {
   "name": "ping-pong-server",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Ping pong Server for MOOC's exercises (postgress backend)",
   "private": true,
   "type": "module",
