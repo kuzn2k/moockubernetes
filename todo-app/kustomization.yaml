@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - manifest/config.yaml
+  - manifest/persistentvolumeclaim.yaml
+  - manifest/statefullset.yaml
+  - manifest/todo-app-deployment.yaml
+  - manifest/todo-app-service.yaml
+  - manifest/todo-backend-deployment.yaml
+  - manifest/todo-backend-service.yaml
+  - manifest/cronjobs.yaml
+  - manifest/gateway.yaml
+  - manifest/route.yaml
+images:
+  - name: PROJECT/WWW
+    newName: kuzn2k/todo-server:1.0.5
+  - name: PROJECT/BACKEND
+    newName: kuzn2k/todo-backend:1.0.5
+generators:
+  - secrets/generator.yaml

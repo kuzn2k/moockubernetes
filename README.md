@@ -35,3 +35,4 @@
 - [3.2.] (https://github.com/kuzn2k/moockubernetes/tree/3.2/app3.2)
 - [3.3.] (https://github.com/kuzn2k/moockubernetes/tree/3.3/app3.3)
 - [3.4.] (https://github.com/kuzn2k/moockubernetes/tree/3.4/ping-pong)
+- [3.5.] (https://github.com/kuzn2k/moockubernetes/tree/3.5/todo-app)

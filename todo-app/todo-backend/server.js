@@ -4,7 +4,11 @@ import { Pool } from 'pg'
 const todosUrl = process.env.TODOS_URL || '/todos'
 
 const fastify = Fastify({
-  logger: true
+  logger: true,
+  routerOptions: {
+    ignoreTrailingSlash: true,
+    ignoreDuplicateSlashes: true
+  }
 })
 
 const pool = new Pool({
@@ -36,6 +40,10 @@ async function createTodo(title) {
   )
   return res.rows[0]
 }
+
+fastify.get('/', async function (request, reply) {
+  reply.send({healthcheck: true})
+})
 
 fastify.get(todosUrl, async (request, reply) => {
   const list = await getTodos()

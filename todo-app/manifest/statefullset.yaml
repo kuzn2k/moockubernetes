@@ -35,21 +35,22 @@ spec:
           ports:
             - name: db
               containerPort: 5432
+          volumeMounts:
+            - name: todo-postgres-data-storage
+              mountPath: /var/lib/postgresql
+              subPath: postgres
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: todo-app-secret
                   key: db_password
-          volumeMounts:
-            - name: todo-postgres-data-storage
-              mountPath: /var/lib/postgresql
   volumeClaimTemplates:
     - metadata:
         name: todo-postgres-data-storage
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: local-path
+        storageClassName: standard
         resources:
           requests:
-            storage: 20Mi
+            storage: 10Gi

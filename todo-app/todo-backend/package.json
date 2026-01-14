@@ -1,6 +1,6 @@
 {
   "name": "todo-backend",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "TODO Backend application for MOOC's Kubernetes course (postgres and logging)",
   "main": "server.js",
   "private": true,

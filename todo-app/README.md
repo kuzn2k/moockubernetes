@@ -1,11 +1,17 @@
 # TODO app
 
+## Create cluster on GKE
+
+````bash
+../gke/create-cluster.sh
+````
+
 ## Build app
 
 ````bash
 cd todo-backend
-docker build -t kuzn2k/todo-backend:1.0.4 .
-docker push kuzn2k/todo-backend:1.0.4
+docker build -t kuzn2k/todo-backend:1.0.5 .
+docker push kuzn2k/todo-backend:1.0.5
 
 cd ../todo-server
 docker build -t kuzn2k/todo-server:1.0.5 .
@@ -16,24 +22,27 @@ docker build -t kuzn2k/todo-reminder:1.0.0 .
 docker push kuzn2k/todo-reminder:1.0.0
 ````
 
-## Provide secrets configuration
-
-````bash
-cd secrets
-sops -d secret.enc.yaml | kubectl apply -f -
-````
-
 ## Deploy app
 
 ````bash
-docker exec k3d-k3s-default-agent-0 mkdir -p /tmp/kube
-kubectl apply -f ../system-project
-kubectl apply -f manifest
+export SOPS_AGE_KEY_FILE="$(pwd)/secrets/key.txt"
+kustomize build . --enable-alpha-plugins --enable-exec | kubectl apply -f -
 ````
 
 ## Open TODO page
 
-Open url http://localhost:8081
+Check server IP by 
+````bash
+kubectl get gateway -n project
+````
+
+Open url http://<server_ip>
+
+## Remove cluster after finish
+
+````bash
+../gke/remove-cluster.sh
+````
 
 
 
