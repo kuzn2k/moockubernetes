@@ -37,7 +37,7 @@ jobs:
       - name: 'Use gcloud CLI'
         run: gcloud info   
 
-      - run: gcloud --quiet auth configure-docker
+      - run: gcloud --quiet auth configure-docker $REGISTRY
 
       - name: 'Get GKE credentials'
         uses: 'google-github-actions/get-gke-credentials@v2'
@@ -79,13 +79,44 @@ jobs:
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2.1.0
 
+      - name: Install sops
+        run: |
+          set -euo pipefail
+          SOPS_VER=3.11.0
+          curl -L -o /usr/local/bin/sops \
+            https://github.com/getsops/sops/releases/download/v${SOPS_VER}/sops-v${SOPS_VER}.linux.amd64
+          chmod +x /usr/local/bin/sops
+          sops --version
+
+      - name: Install ksops and register Kustomize plugin
+        run: |
+          set -euo pipefail
+
+          ARCH="$(uname -m)"
+          if [ "$ARCH" = "x86_64" ]; then KSOPS_ASSET="ksops-linux-amd64";
+          elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then KSOPS_ASSET="ksops-linux-arm64";
+          else echo "Unsupported arch: $ARCH" && exit 1; fi
+
+          curl -L -o /usr/local/bin/ksops \
+            "https://github.com/viaduct-ai/kustomize-sops/releases/latest/download/${KSOPS_ASSET}"
+          chmod +x /usr/local/bin/ksops
+
+          export KUSTOMIZE_PLUGIN_HOME="$HOME/.config/kustomize/plugin"
+          mkdir -p "$KUSTOMIZE_PLUGIN_HOME/viaduct.ai/v1/ksops"
+          cp /usr/local/bin/ksops "$KUSTOMIZE_PLUGIN_HOME/viaduct.ai/v1/ksops/ksops"
+          chmod +x "$KUSTOMIZE_PLUGIN_HOME/viaduct.ai/v1/ksops/ksops"
+
+          ls -la "$KUSTOMIZE_PLUGIN_HOME/viaduct.ai/v1/ksops"
+
       - name: Deploy
         working-directory: ./todo-app
+        env:
+          KUSTOMIZE_PLUGIN_HOME: ${{ env.HOME }}/.config/kustomize/plugin
         run: |-
           kustomize edit set image PROJECT/WWW=$IMAGE_WWW_TAG
           kustomize edit set image PROJECT/BACKEND=$IMAGE_BACKEND_TAG
           kustomize edit set image PROJECT/REMINDER=$IMAGE_REMINDER_TAG
-          kustomize build . | kubectl apply -f -
+          kustomize build . --enable-alpha-plugins --enable-exec | kubectl apply -f -
           kubectl rollout status deployment $SERVICE_WWW -n project
           kubectl rollout status deployment $SERVICE_BACKEND -n project
           kubectl rollout status deployment $SERVICE_REMINDER -n project
