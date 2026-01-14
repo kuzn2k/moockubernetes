@@ -92,14 +92,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          ARCH="$(uname -m)"
-          if [ "$ARCH" = "x86_64" ]; then KSOPS_ASSET="ksops-linux-amd64";
-          elif [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then KSOPS_ASSET="ksops-linux-arm64";
-          else echo "Unsupported arch: $ARCH" && exit 1; fi
-
-          curl -L -o /usr/local/bin/ksops \
-            "https://github.com/viaduct-ai/kustomize-sops/releases/latest/download/${KSOPS_ASSET}"
-          chmod +x /usr/local/bin/ksops
+          curl -s https://raw.githubusercontent.com/viaduct-ai/kustomize-sops/master/scripts/install-ksops-archive.sh | bash
 
           export KUSTOMIZE_PLUGIN_HOME="$HOME/.config/kustomize/plugin"
           mkdir -p "$KUSTOMIZE_PLUGIN_HOME/viaduct.ai/v1/ksops"
