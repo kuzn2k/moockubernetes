@@ -8,6 +8,10 @@ spec:
   selector:
     matchLabels:
       app: todo-server
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
   template:
     metadata:
       labels:
