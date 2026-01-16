@@ -12,7 +12,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: todo-remainder-job
-            image: kuzn2k/todo-reminder:1.0.0
+            image: PROJECT/REMINDER
             imagePullPolicy: Always
             env:
               - name: DB_URL
