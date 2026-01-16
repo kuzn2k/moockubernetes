@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   namespace: project
-  name: todo-remainder-job
+  name: todo-reminder-job
 spec:
   schedule: "@hourly"
   jobTemplate:
@@ -11,7 +11,7 @@ spec:
         spec:
           restartPolicy: OnFailure
           containers:
-          - name: todo-remainder-job
+          - name: todo-reminder-job
             image: PROJECT/REMINDER
             imagePullPolicy: Always
             env:
