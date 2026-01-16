@@ -112,7 +112,6 @@ jobs:
           kustomize build . --enable-alpha-plugins --enable-exec | kubectl apply -f -
           kubectl rollout status deployment $SERVICE_WWW -n project
           kubectl rollout status deployment $SERVICE_BACKEND -n project
-          kubectl rollout status deployment $SERVICE_REMINDER -n project
           kubectl get services -o wide -n project
           kubectl get pod -o wide -n project
           kubectl get gateway -o wide -n project
