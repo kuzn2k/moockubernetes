@@ -2,6 +2,7 @@ name: Release application
 
 on:
   push:
+  delete:
 
 env:
   SOPS_AGE_KEY: ${{ secrets.SOPS_AGE_KEY }}
@@ -124,3 +125,31 @@ jobs:
           kubectl get services -o wide
           kubectl get pod -o wide
           kubectl get gateway -o wide
+
+  cleanup-namespace:
+    if: github.event_name == 'delete' && github.event.ref_type == 'branch'
+    name: Cleanup Namespace on Branch Delete
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GKE_SA_KEY }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: 'Get GKE credentials'
+        uses: 'google-github-actions/get-gke-credentials@v2'
+        with:
+          cluster_name: '${{ env.GKE_CLUSTER }}'
+          project_id: '${{ env.PROJECT_ID }}'
+          location: '${{ env.GKE_ZONE }}'
+
+      - name: Delete Kubernetes Namespace
+        run: |
+          if [ "${{ github.event.ref }}" = "main" ]; then
+            NAMESPACE="project"
+          else
+            NAMESPACE="${{ github.event.ref }}"
+          fi
+          kubectl delete namespace $NAMESPACE --ignore-not-found
