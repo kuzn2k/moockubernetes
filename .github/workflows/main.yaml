@@ -20,6 +20,7 @@ env:
 
 jobs:
   build-publish-deploy:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/')
     name: Build, Publish and Deploy
     runs-on: ubuntu-latest
 
@@ -106,12 +107,20 @@ jobs:
         env:
           KUSTOMIZE_PLUGIN_HOME: ${{ env.HOME }}/.config/kustomize/plugin
         run: |-
+          if [ "${GITHUB_REF#refs/heads/}" = "main" ]; then
+            NAMESPACE="project"
+          else
+            NAMESPACE="${GITHUB_REF#refs/heads/}"
+          fi
           kustomize edit set image PROJECT/WWW=$IMAGE_WWW_TAG
           kustomize edit set image PROJECT/BACKEND=$IMAGE_BACKEND_TAG
           kustomize edit set image PROJECT/REMINDER=$IMAGE_REMINDER_TAG
+          kubectl create namespace $NAMESPACE || true
+          kubectl config set-context --current --namespace=$NAMESPACE
+          kustomize edit set namespace $NAMESPACE
           kustomize build . --enable-alpha-plugins --enable-exec | kubectl apply -f -
-          kubectl rollout status deployment $SERVICE_WWW -n project
-          kubectl rollout status deployment $SERVICE_BACKEND -n project
-          kubectl get services -o wide -n project
-          kubectl get pod -o wide -n project
-          kubectl get gateway -o wide -n project
+          kubectl rollout status deployment $SERVICE_WWW
+          kubectl rollout status deployment $SERVICE_BACKEND
+          kubectl get services -o wide
+          kubectl get pod -o wide
+          kubectl get gateway -o wide
