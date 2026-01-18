@@ -17,6 +17,8 @@ images:
   - name: PROJECT/BACKEND
     newName: kuzn2k/todo-backend:1.0.5
   - name: PROJECT/REMINDER
-    newName: kuzn2k/todo-reminder:1.0.0    
+    newName: kuzn2k/todo-reminder:1.0.0
+  - name: PROJECT/BACKUP
+    newName: kuzn2k/backup-job:1.0.0  
 generators:
   - secrets/generator.yaml

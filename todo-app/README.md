@@ -32,6 +32,7 @@ We need deep Postgres customization; strict cost control at small scale; we have
 
 ````bash
 ../gke/create-cluster.sh
+../update-cloud-permissions.sh
 ````
 
 ## Build app
@@ -48,6 +49,10 @@ docker push kuzn2k/todo-server:1.0.5
 cd ../todo-reminder
 docker build -t kuzn2k/todo-reminder:1.0.0 .
 docker push kuzn2k/todo-reminder:1.0.0
+
+cd ../backup-job
+docker build -t kuzn2k/backup-job:1.0.0 .
+docker push kuzn2k/backup-job:1.0.0
 ````
 
 ## Deploy app

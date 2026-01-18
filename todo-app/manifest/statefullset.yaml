@@ -31,7 +31,7 @@ spec:
     spec:
       containers:
         - name: todo-postgres-db
-          image: postgres
+          image: postgres:18.1
           ports:
             - name: db
               containerPort: 5432

@@ -17,6 +17,7 @@ env:
   SERVICE_BACKEND: todo-backend
   IMAGE_REMINDER: todo-reminder
   SERVICE_REMINDER: todo-reminder-job  
+  IMAGE_BACKUP: todo-backup
   BRANCH: ${{ github.ref_name }}
 
 jobs:
@@ -53,6 +54,7 @@ jobs:
           echo "IMAGE_WWW_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$IMAGE_WWW:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
           echo "IMAGE_BACKEND_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$IMAGE_BACKEND:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
           echo "IMAGE_REMINDER_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$IMAGE_REMINDER:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
+          echo "IMAGE_BACKUP_TAG=$REGISTRY/$PROJECT_ID/$REPOSITORY/$IMAGE_BACKUP:$BRANCH-$GITHUB_SHA" >> $GITHUB_ENV
 
       - name: Build WWW
         working-directory: ./todo-app/todo-server
@@ -77,6 +79,14 @@ jobs:
       - name: Publish REMINDER
         working-directory: ./todo-app/todo-reminder
         run: docker push $IMAGE_REMINDER_TAG  
+
+      - name: Build BACKUP
+        working-directory: ./todo-app/backup-job
+        run: docker build --tag $IMAGE_BACKUP_TAG .
+
+      - name: Publish BACKUP
+        working-directory: ./todo-app/backup-job
+        run: docker push $IMAGE_BACKUP_TAG
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2.1.0
@@ -116,6 +126,7 @@ jobs:
           kustomize edit set image PROJECT/WWW=$IMAGE_WWW_TAG
           kustomize edit set image PROJECT/BACKEND=$IMAGE_BACKEND_TAG
           kustomize edit set image PROJECT/REMINDER=$IMAGE_REMINDER_TAG
+          kustomize edit set image PROJECT/BACKUP=$IMAGE_BACKUP_TAG
           kubectl create namespace $NAMESPACE || true
           kubectl config set-context --current --namespace=$NAMESPACE
           kustomize edit set namespace $NAMESPACE
