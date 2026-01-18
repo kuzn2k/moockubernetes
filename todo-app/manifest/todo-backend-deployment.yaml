@@ -17,6 +17,13 @@ spec:
         - name: app
           image: PROJECT/BACKEND
           imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "5m"
+              memory: "20Mi"
+            limits:
+              cpu: "150m"
+              memory: "25Mi"
           env:
             - name: PORT
               value: "3000"

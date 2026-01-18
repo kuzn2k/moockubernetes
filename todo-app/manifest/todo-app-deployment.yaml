@@ -25,6 +25,13 @@ spec:
         - name: app
           image: PROJECT/WWW
           imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: "5m"
+              memory: "20Mi"
+            limits:
+              cpu: "150m"
+              memory: "30Mi"
           volumeMounts:
             - name: shared-files
               mountPath: /var/tmp/mooc/files          

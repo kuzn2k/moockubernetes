@@ -32,6 +32,13 @@ spec:
       containers:
         - name: todo-postgres-db
           image: postgres:18.1
+          resources:
+            requests:
+              cpu: "5m"
+              memory: "45Mi"
+            limits:
+              cpu: "150m"
+              memory: "100Mi"
           ports:
             - name: db
               containerPort: 5432

@@ -41,3 +41,4 @@
 - [3.8.] (https://github.com/kuzn2k/moockubernetes/tree/3.8/.github/workflows)
 - [3.9.] (https://github.com/kuzn2k/moockubernetes/tree/3.9/todo-app)
 - [3.10.] (https://github.com/kuzn2k/moockubernetes/tree/3.10/todo-app/backup-job)
+- [3.11.] (https://github.com/kuzn2k/moockubernetes/tree/3.11/todo-app)
