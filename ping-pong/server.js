@@ -1,6 +1,8 @@
 import Fastify from 'fastify'
 import { Pool } from 'pg'
 
+let isDbAlive = false
+
 const fastify = Fastify({
   logger: true,
   routerOptions: {
@@ -30,6 +32,31 @@ async function ensureDb() {
   )
 }
 
+async function checkConnectDb() {
+  try {
+    await pool.query(`SELECT value FROM kv WHERE key = $1`, ['count'])
+    isDbAlive = true
+    return true
+  } catch (err) {
+    fastify.log.error('database is down', err)
+    isDbAlive = false
+  }
+  return false
+}
+
+async function checkDb() {
+  try {
+    await ensureDb()
+    fastify.log.info("Database is ready")
+    isDbAlive = true
+    return true
+  } catch (err) {
+    fastify.log.error(err)
+    setTimeout(() => checkDb(), 2)
+  }
+  return false
+}
+
 async function incrementCount() {
   const res = await pool.query(
     `UPDATE kv SET value = value + 1 WHERE key = $1 RETURNING value`,
@@ -49,25 +76,43 @@ async function getCount() {
 
 fastify.get('/pingpong', async function (request, reply) {
   reply.header('Content-Type', 'text/plain')
-  const newCount = await incrementCount()
-  const out = "pong " + newCount
-  reply.send(out)
+  if (isDbAlive) {
+    const newCount = await incrementCount()
+    const out = "pong " + newCount
+    reply.send(out)
+  } else {
+    reply.code(500).send("database is not ready")
+  }
 })
 
 fastify.get('/pings', async function (request, reply) {
-  const c = await getCount()
-  reply.send({count: c})
+  if (isDbAlive) {
+    const c = await getCount()
+    reply.send({count: c})
+  } else {
+    reply.code(500).send({error: "database is not ready"})
+  }
 })
 
 fastify.get('/', async function (request, reply) {
   reply.send({healthcheck: true})
 })
 
+fastify.get('/healthz', async function (request, reply) {
+  const dbAlive = await checkConnectDb()
+  if (dbAlive) {
+    reply.code(200)
+  }
+  else {
+    reply.code(500)
+  }
+  reply.send("")
+})
+
 const port = process.env.PORT || 3000
 
 const start = async () => {
   try {
-    await ensureDb()
     await fastify.listen({ port: port, host: '0.0.0.0' })
   } catch (err) {
     fastify.log.error(err)
@@ -76,3 +121,4 @@ const start = async () => {
 }
 
 start()
+checkDb()
