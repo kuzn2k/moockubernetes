@@ -48,3 +48,4 @@
 
 - [4.1.] (https://github.com/kuzn2k/moockubernetes/tree/4.1/app4.1)
 - [4.2.] (https://github.com/kuzn2k/moockubernetes/tree/4.2/todo-app)
+- [4.3.] (https://github.com/kuzn2k/moockubernetes/tree/4.3/logging/query.txt)
