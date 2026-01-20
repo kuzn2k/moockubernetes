@@ -13,9 +13,9 @@ resources:
   - manifest/route.yaml
 images:
   - name: PROJECT/WWW
-    newName: kuzn2k/todo-server:1.0.5
+    newName: kuzn2k/todo-server:1.0.6
   - name: PROJECT/BACKEND
-    newName: kuzn2k/todo-backend:1.0.5
+    newName: kuzn2k/todo-backend:1.0.6
   - name: PROJECT/REMINDER
     newName: kuzn2k/todo-reminder:1.0.0
   - name: PROJECT/BACKUP

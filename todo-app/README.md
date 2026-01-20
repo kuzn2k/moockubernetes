@@ -39,12 +39,12 @@ We need deep Postgres customization; strict cost control at small scale; we have
 
 ````bash
 cd todo-backend
-docker build -t kuzn2k/todo-backend:1.0.5 .
-docker push kuzn2k/todo-backend:1.0.5
+docker build -t kuzn2k/todo-backend:1.0.6 .
+docker push kuzn2k/todo-backend:1.0.6
 
 cd ../todo-server
-docker build -t kuzn2k/todo-server:1.0.5 .
-docker push kuzn2k/todo-server:1.0.5
+docker build -t kuzn2k/todo-server:1.0.6 .
+docker push kuzn2k/todo-server:1.0.6
 
 cd ../todo-reminder
 docker build -t kuzn2k/todo-reminder:1.0.0 .

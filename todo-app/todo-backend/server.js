@@ -3,6 +3,8 @@ import { Pool } from 'pg'
 
 const todosUrl = process.env.TODOS_URL || '/todos'
 
+let isDbAlive = false
+
 const fastify = Fastify({
   logger: true,
   routerOptions: {
@@ -26,6 +28,31 @@ async function ensureDb() {
       title TEXT NOT NULL
     )
   `)
+}
+
+async function checkConnectDb() {
+  try {
+    await pool.query('SELECT COUNT(id) FROM todos')
+    isDbAlive = true
+    return true
+  } catch (err) {
+    fastify.log.error('database is down', err)
+    isDbAlive = false
+  }
+  return false
+}
+
+async function checkDb() {
+  try {
+    await ensureDb()
+    fastify.log.info("Database is ready")
+    isDbAlive = true
+    return true
+  } catch (err) {
+    fastify.log.error(err)
+    setTimeout(() => checkDb(), 2)
+  }
+  return false
 }
 
 async function getTodos() {
@@ -70,6 +97,17 @@ fastify.post(todosUrl, {
   reply.code(201).send(todo)
 })
 
+fastify.get('/healthz', async function (request, reply) {
+  const dbAlive = await checkConnectDb()
+  if (dbAlive) {
+    reply.code(200)
+  }
+  else {
+    reply.code(500)
+  }
+  reply.send("")
+})
+
 fastify.setErrorHandler(function (error, request, reply) {
   if (error.validation) {
     fastify.log.info({ 
@@ -89,7 +127,6 @@ const port = process.env.PORT || 3000
 
 const start = async () => {
   try {
-    await ensureDb()
     await fastify.listen({ port: port, host: '0.0.0.0' })
   } catch (err) {
     fastify.log.error(err)
@@ -98,3 +135,4 @@ const start = async () => {
 }
 
 start()
+checkDb()

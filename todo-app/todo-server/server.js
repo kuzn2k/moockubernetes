@@ -11,6 +11,7 @@ const IMAGE_SERVICE_URL = process.env.IMAGE_SERVICE_URL
 const IMAGE_SIZE = process.env.IMAGE_SIZE
 const MAX_TODO_LENGTH = process.env.MAX_TODO_LENGTH
 const REFRESH_TIME = process.env.REFRESH_TIME
+const BACKEND_PROBE_URL = process.env.BACKEND_PROBE_URL
 
 const htmlTemplate = `
 <!doctype html>
@@ -265,6 +266,34 @@ async function rotateImage(name) {
 
 const fastify = Fastify({
   logger: true
+})
+
+async function checkBackend() {
+  try {
+    const res = await fetch(BACKEND_PROBE_URL)
+    if (!res.ok) {
+      fastify.log.error('Backend is not ready')
+    } else {
+      fastify.log.info('Backend is up')
+      return true
+    }
+  } catch (err) {
+    fastify.log.error(err)
+    fastify.log.error('Error: Backend is not ready')
+  }
+  return false
+}
+
+fastify.get('/healthz', async function (request, reply) {
+  const ready = await checkBackend()
+  if (ready) {
+    reply.code(200)
+    fastify.log.debug("Return code " + reply.statusCode)
+  } else {
+    reply.code(500)
+    fastify.log.debug("Return code " + reply.statusCode)
+  }
+  reply.send("")
 })
 
 fastify.get(imageUrl, async (request, reply) => {

@@ -17,5 +17,6 @@ data:
   db_user: "postgres"
   db_database: "postgres"
   gcs_bucket: "mooc-project-backup"
+  backend_probe_url: "http://todo-bc-svc:2345/healthz"
 
   

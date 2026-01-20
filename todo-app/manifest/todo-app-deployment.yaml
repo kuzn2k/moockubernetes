@@ -28,10 +28,16 @@ spec:
           resources:
             requests:
               cpu: "5m"
-              memory: "20Mi"
+              memory: "25Mi"
             limits:
               cpu: "150m"
-              memory: "30Mi"
+              memory: "50Mi"
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+               path: /healthz
+               port: 3000          
           volumeMounts:
             - name: shared-files
               mountPath: /var/tmp/mooc/files          
@@ -78,6 +84,11 @@ spec:
                 configMapKeyRef:
                   name: todo-app-config
                   key: refresh_time
+            - name: BACKEND_PROBE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-config
+                  key: backend_probe_url
           ports:
             - name: todo-port
               containerPort: 3000

@@ -20,10 +20,16 @@ spec:
           resources:
             requests:
               cpu: "5m"
-              memory: "20Mi"
+              memory: "25Mi"
             limits:
               cpu: "150m"
-              memory: "25Mi"
+              memory: "50Mi"
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            httpGet:
+               path: /healthz
+               port: 3000          
           env:
             - name: PORT
               value: "3000"
