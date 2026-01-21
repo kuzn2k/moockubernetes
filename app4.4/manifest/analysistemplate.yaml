@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  namespace: exercises
+  name: cpu-rate
+spec:
+  metrics:
+  - name: cpu-rate
+    initialDelay: 5m
+    successCondition: result < 0.001
+    provider:
+      prometheus:
+        address: http://kube-prometheus-stack-1768-prometheus.prometheus.svc.cluster.local:9090
+        query: |
+          scalar(
+            sum(rate(container_cpu_usage_seconds_total{namespace="exercises", image!=""}[5m])) -
+            sum(rate(container_cpu_usage_seconds_total{namespace="exercises", image!=""}[5m] offset 5m))
+          )

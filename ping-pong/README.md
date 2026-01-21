@@ -7,8 +7,8 @@
 ## Build app
 
 ````bash
-docker build -t kuzn2k/ping-pong-server:1.0.7 .
-docker push kuzn2k/ping-pong-server:1.0.7
+docker build -t kuzn2k/ping-pong-server:1.0.9 .
+docker push kuzn2k/ping-pong-server:1.0.9
 ````
 
 ## Deploy app

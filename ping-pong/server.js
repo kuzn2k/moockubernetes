@@ -78,7 +78,7 @@ fastify.get('/pingpong', async function (request, reply) {
   reply.header('Content-Type', 'text/plain')
   if (isDbAlive) {
     const newCount = await incrementCount()
-    const out = "pong " + newCount
+    const out = "pong " + newCount + ' 1.0.9'
     reply.send(out)
   } else {
     reply.code(500).send("database is not ready")
