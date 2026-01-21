@@ -25,8 +25,13 @@ async function ensureDb() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS todos (
       id SERIAL PRIMARY KEY,
-      title TEXT NOT NULL
+      title TEXT NOT NULL,
+      done BOOLEAN NOT NULL DEFAULT false
     )
+  `)
+  await pool.query(`
+    ALTER TABLE todos
+    ADD COLUMN IF NOT EXISTS done BOOLEAN NOT NULL DEFAULT false
   `)
 }
 
@@ -56,16 +61,24 @@ async function checkDb() {
 }
 
 async function getTodos() {
-  const res = await pool.query('SELECT id, title FROM todos ORDER BY id')
+  const res = await pool.query('SELECT id, title, done FROM todos ORDER BY id')
   return res.rows
 }
 
-async function createTodo(title) {
+async function createTodo(title, done) {
   const res = await pool.query(
-    'INSERT INTO todos(title) VALUES($1) RETURNING id, title',
-    [title]
+    'INSERT INTO todos(title, done) VALUES($1, $2) RETURNING id, title, done',
+    [title, done]
   )
   return res.rows[0]
+}
+
+async function updateTodoDone(id, done) {
+  const res = await pool.query(
+    'UPDATE todos SET done = $1 WHERE id = $2 RETURNING id, title, done',
+    [done, id]
+  )
+  return res.rows[0] || null
 }
 
 fastify.get('/', async function (request, reply) {
@@ -83,18 +96,51 @@ fastify.post(todosUrl, {
       type: 'object',
       required: ['title'],
       properties: {
-        title: { type: 'string', maxLength: 140 }
+        title: { type: 'string', maxLength: 140 },
+        done: { type: 'boolean' }
       }
     }
   }
 }, async (request, reply) => {
-  const { title } = request.body
+  const { title, done } = request.body
   if (!title) {
     reply.code(400).send({ error: 'title required' })
     return
   }
-  const todo = await createTodo(title)
+  const todo = await createTodo(title, done ?? false)
   reply.code(201).send(todo)
+})
+
+fastify.put(`${todosUrl}/:id`, {
+  schema: {
+    params: {
+      type: 'object',
+      required: ['id'],
+      properties: {
+        id: { type: 'integer' }
+      }
+    },
+    body: {
+      type: 'object',
+      required: ['done'],
+      properties: {
+        done: { type: 'boolean' }
+      }
+    }
+  }
+}, async (request, reply) => {
+  const id = Number(request.params.id)
+  if (!Number.isInteger(id)) {
+    reply.code(400).send({ error: 'invalid id' })
+    return
+  }
+  const { done } = request.body
+  const updated = await updateTodoDone(id, done)
+  if (!updated) {
+    reply.code(404).send({ error: 'todo not found' })
+    return
+  }
+  reply.send(updated)
 })
 
 fastify.get('/healthz', async function (request, reply) {

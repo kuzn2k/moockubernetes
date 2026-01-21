@@ -102,7 +102,7 @@ const htmlTemplate = `
         const res = await fetch('${todosUrl}', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title: v })
+          body: JSON.stringify({ title: v, done: false })
         });
 
         if (!res.ok) {
@@ -112,8 +112,7 @@ const htmlTemplate = `
 
         const created = await res.json();
         const ul = document.getElementById('todo-list');
-        const li = document.createElement('li');
-        li.textContent = created.title || v;
+        const li = createTodoItem(created);
         ul.appendChild(li);
 
         inputEl.value = '';
@@ -140,17 +139,80 @@ const htmlTemplate = `
       }
     }
 
+    async function setTodoDone(id, done) {
+      try {
+        const res = await fetch('${todosUrl}/' + id, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ done: Boolean(done) })
+        });
+        if (!res.ok) {
+          console.error('Failed updating todo', res.status, res.statusText);
+          return null;
+        }
+        return await res.json();
+      } catch (err) {
+        console.error('Error updating todo', err);
+        return null;
+      }
+    }
+
+    function createTodoItem(todo) {
+      const li = document.createElement('li');
+      const text = document.createElement('span');
+      text.textContent = todo.title ?? String(todo);
+      li.appendChild(text);
+
+      if (!todo.done) {
+        const label = document.createElement('label');
+        label.style.marginLeft = '10px';
+        label.style.fontSize = '14px';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.style.marginRight = '6px';
+        checkbox.addEventListener('change', async () => {
+          checkbox.disabled = true;
+          const updated = await setTodoDone(todo.id, true);
+          if (updated && updated.done) {
+            li.remove();
+            const doneList = document.getElementById('done-list');
+            doneList.appendChild(createTodoItem(updated));
+          } else {
+            checkbox.disabled = false;
+            checkbox.checked = false;
+          }
+        });
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode('Make Done'));
+        li.appendChild(label);
+      } else {
+        const doneTag = document.createElement('span');
+        doneTag.style.marginLeft = '10px';
+        doneTag.style.fontSize = '14px';
+        doneTag.textContent = 'Done';
+        li.appendChild(doneTag);
+      }
+
+      return li;
+    }
+
     window.addEventListener('load', async () => {
       const todoList = await getTodoList();
 
       const ul = document.getElementById('todo-list');
+      const doneUl = document.getElementById('done-list');
 
       if (!todoList || todoList.length === 0) return;
 
       todoList.forEach((value) => {
-        const li = document.createElement('li');
-        li.textContent = value.title ?? String(value);
-        ul.appendChild(li);
+        const li = createTodoItem(value);
+        if (value.done) {
+          doneUl.appendChild(li);
+        } else {
+          ul.appendChild(li);
+        }
       });
     });
   </script>
@@ -173,6 +235,10 @@ const htmlTemplate = `
       </form>
 
       <ul class="todolist" id="todo-list" aria-live="polite">
+      </ul>
+
+      <h2 style="margin:16px 0 6px 0;font-size:24px;">Done</h2>
+      <ul class="todolist" id="done-list" aria-live="polite">
       </ul>
 
       <div class="caption">DevOps with Kubernetes 2025</div>
