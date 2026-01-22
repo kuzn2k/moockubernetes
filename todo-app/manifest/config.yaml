@@ -18,5 +18,8 @@ data:
   db_database: "postgres"
   gcs_bucket: "mooc-project-backup"
   backend_probe_url: "http://todo-bc-svc:2345/healthz"
+  nats_url: "nats://nats:4222"
+  nats_subject: "todos.events"
+  nats_queue: "broadcaster"
 
   

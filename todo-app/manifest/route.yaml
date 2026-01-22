@@ -20,4 +20,5 @@ spec:
         value: /todos
     backendRefs:
     - name: todo-bc-svc
-      port: 2345 
+      port: 2345
+

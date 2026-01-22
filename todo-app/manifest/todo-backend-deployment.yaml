@@ -63,6 +63,16 @@ spec:
                 configMapKeyRef:
                   name: todo-app-config
                   key: db_database
+            - name: NATS_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-config
+                  key: nats_url
+            - name: NATS_SUBJECT
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-config
+                  key: nats_subject
           ports:
             - name: todo-bc-port
               containerPort: 3000

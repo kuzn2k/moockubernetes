@@ -39,8 +39,8 @@ We need deep Postgres customization; strict cost control at small scale; we have
 
 ````bash
 cd todo-backend
-docker build -t kuzn2k/todo-backend:1.0.7 .
-docker push kuzn2k/todo-backend:1.0.7
+docker build -t kuzn2k/todo-backend:1.0.8 .
+docker push kuzn2k/todo-backend:1.0.8
 
 cd ../todo-server
 docker build -t kuzn2k/todo-server:1.0.7 .
@@ -49,6 +49,10 @@ docker push kuzn2k/todo-server:1.0.7
 cd ../todo-reminder
 docker build -t kuzn2k/todo-reminder:1.0.0 .
 docker push kuzn2k/todo-reminder:1.0.0
+
+cd ../broadcaster
+docker build -t kuzn2k/broadcaster:1.0.0 .
+docker push kuzn2k/broadcaster:1.0.0
 
 cd ../backup-job
 docker build -t kuzn2k/backup-job:1.0.0 .
@@ -71,11 +75,11 @@ kubectl get gateway -n project
 
 Open url http://<server_ip>
 
+The App sends notification of TODO creating/updating in to Telegram's @moocdevopsbot
+
 ## Remove cluster after finish
 
 ````bash
 ../gke/remove-cluster.sh
 ````
-
-
 

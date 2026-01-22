@@ -1,9 +1,14 @@
 import Fastify from 'fastify'
 import { Pool } from 'pg'
+import { connect, StringCodec } from 'nats'
 
 const todosUrl = process.env.TODOS_URL || '/todos'
+const natsUrl = process.env.NATS_URL || 'nats://nats:4222'
+const natsSubject = process.env.NATS_SUBJECT || 'todos.events'
 
-let isDbAlive = false
+let natsConn = null
+let natsConnectPromise = null
+const natsCodec = StringCodec()
 
 const fastify = Fastify({
   logger: true,
@@ -38,11 +43,9 @@ async function ensureDb() {
 async function checkConnectDb() {
   try {
     await pool.query('SELECT COUNT(id) FROM todos')
-    isDbAlive = true
     return true
   } catch (err) {
     fastify.log.error('database is down', err)
-    isDbAlive = false
   }
   return false
 }
@@ -51,7 +54,6 @@ async function checkDb() {
   try {
     await ensureDb()
     fastify.log.info("Database is ready")
-    isDbAlive = true
     return true
   } catch (err) {
     fastify.log.error(err)
@@ -81,6 +83,49 @@ async function updateTodoDone(id, done) {
   return res.rows[0] || null
 }
 
+async function getNatsConnection() {
+  if (natsConn) return natsConn
+  if (!natsConnectPromise) {
+    natsConnectPromise = connect({ servers: natsUrl, name: 'todo-backend' })
+      .then((conn) => {
+        natsConn = conn
+        conn.closed().then((err) => {
+          if (err) {
+            fastify.log.error({ err }, 'NATS connection closed with error')
+          }
+          natsConn = null
+          natsConnectPromise = null
+        })
+        return conn
+      })
+      .catch((err) => {
+        fastify.log.error({ err }, 'Failed to connect to NATS')
+        natsConnectPromise = null
+        return null
+      })
+  }
+  return natsConnectPromise
+}
+
+async function publishTodoEvent(type, todo) {
+  const conn = await getNatsConnection()
+  if (!conn) {
+    fastify.log.error('No NATS connection')
+    return
+  }
+  const payload = {
+    type,
+    todo,
+    ts: new Date().toISOString()
+  }
+  try {
+    conn.publish(natsSubject, natsCodec.encode(JSON.stringify(payload)))
+    fastify.log.info('Published new todo event')
+  } catch (err) {
+    fastify.log.error({ err }, 'Failed to publish todo event')
+  }
+}
+
 fastify.get('/', async function (request, reply) {
   reply.send({healthcheck: true})
 })
@@ -108,6 +153,7 @@ fastify.post(todosUrl, {
     return
   }
   const todo = await createTodo(title, done ?? false)
+  await publishTodoEvent('todo.created', todo)
   reply.code(201).send(todo)
 })
 
@@ -140,18 +186,24 @@ fastify.put(`${todosUrl}/:id`, {
     reply.code(404).send({ error: 'todo not found' })
     return
   }
+  await publishTodoEvent('todo.updated', updated)
   reply.send(updated)
 })
 
 fastify.get('/healthz', async function (request, reply) {
   const dbAlive = await checkConnectDb()
   if (dbAlive) {
-    reply.code(200)
+    const conn = await getNatsConnection()
+    if (conn) {
+      reply.code(200).send("")
+      return
+    } else {
+      fastify.log.error('NATS connection is broken')
+    }
+  } else {
+    fastify.log.error('Database is down')
   }
-  else {
-    reply.code(500)
-  }
-  reply.send("")
+  reply.code(500).send("")
 })
 
 fastify.setErrorHandler(function (error, request, reply) {

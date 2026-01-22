@@ -2,37 +2,38 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   namespace: project
-  name: todo-server-hpa
+  name: todo-backend-hpa
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: todo-server
+    name: todo-backend
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 6
   metrics:
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 50
+          averageUtilization: 80
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: 80
+          averageUtilization: 150
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 120
+      stabilizationWindowSeconds: 60
 ---
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: todo-server-pdb
+  namespace: project
+  name: todo-backend-pdb
 spec:
   maxUnavailable: 30%
   selector:
     matchLabels:
-      app: todo-server
+      app: todo-backend

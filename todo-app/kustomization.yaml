@@ -6,19 +6,26 @@ resources:
   - manifest/statefullset.yaml
   - manifest/todo-app-deployment.yaml
   - manifest/todo-app-service.yaml
+  - manifest/todo-backend-horizontalpodautoscaler.yaml  
   - manifest/todo-backend-deployment.yaml
   - manifest/todo-backend-service.yaml
+  - manifest/nats-deployment.yaml
+  - manifest/nats-service.yaml
+  - manifest/broadcaster-deployment.yaml
   - manifest/cronjobs.yaml
   - manifest/gateway.yaml
   - manifest/route.yaml
+  
 images:
   - name: PROJECT/WWW
     newName: kuzn2k/todo-server:1.0.7
   - name: PROJECT/BACKEND
-    newName: kuzn2k/todo-backend:1.0.7
+    newName: kuzn2k/todo-backend:1.0.8
   - name: PROJECT/REMINDER
     newName: kuzn2k/todo-reminder:1.0.0
   - name: PROJECT/BACKUP
     newName: kuzn2k/backup-job:1.0.0  
+  - name: PROJECT/BROADCASTER
+    newName: kuzn2k/broadcaster:1.0.0
 generators:
   - secrets/generator.yaml
