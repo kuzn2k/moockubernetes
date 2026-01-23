@@ -5,28 +5,11 @@
 ````bash
 ../gke/create-cluster.sh
 ````
+This command also installs ArgoCD and configures log-app
 
-## Build app
+## Build app and Deploy
 
-````bash
-cd ../log-output
-docker build -t kuzn2k/log-output:1.0.1 .
-docker push kuzn2k/log-output:1.0.1
-
-cd ../random-server
-docker build -t kuzn2k/random-server:1.0.8 .
-docker push kuzn2k/random-server:1.0.8
-
-cd ../ping-pong
-docker build -t kuzn2k/ping-pong-server:1.0.7 .
-docker push kuzn2k/ping-pong-server:1.0.7
-````
-
-## Deploy app
-
-````bash
-kubectl apply -f manifest
-````
+Just make sure ArgoCD is active and configured for log-app
 
 ## Open log-output page
 

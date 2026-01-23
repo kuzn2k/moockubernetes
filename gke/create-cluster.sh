@@ -4,3 +4,7 @@ gcloud container clusters create dwk-cluster --zone=europe-north2-c --disk-size=
 
 kubectl create namespace exercises
 kubectl create namespace project
+
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl -n argocd apply -f argocd-applications.yaml

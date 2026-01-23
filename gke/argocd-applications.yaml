@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: List
+metadata:
+  resourceVersion: ""
+items:
+- apiVersion: argoproj.io/v1alpha1
+  kind: Application
+  metadata:
+    creationTimestamp: "2026-01-23T18:30:34Z"
+    generation: 92
+    name: log-app
+    namespace: argocd
+    resourceVersion: "1769199849221663009"
+    uid: b4806870-fff2-4f4a-8d8c-edc9e53a33a7
+  spec:
+    destination:
+      namespace: exercises
+      server: https://kubernetes.default.svc
+    project: default
+    source:
+      path: app4.7
+      repoURL: https://github.com/kuzn2k/moockubernetes
+      targetRevision: HEAD
+    syncPolicy:
+      automated:
+        enabled: true
+      syncOptions:
+      - CreateNamespace=true
+
