@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: exercises
+  name: ping-pong-service-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: ping-pong-server
+  ports:
+    - port: 2345
+      protocol: TCP
+      targetPort: ping-port

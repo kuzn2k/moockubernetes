@@ -1,0 +1,54 @@
+name: Build and publish Log application
+
+on:
+  push:
+
+jobs:
+  build-publish:
+    name: Build, Push, Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # tag image with the GitHub SHA to get a unique tag
+      - name: Build and publish backend
+        working-directory: ./ping-pong
+        run: |-
+          docker build --tag "kuzn2k/ping-pong-server:$GITHUB_SHA" .
+          docker push "kuzn2k/ping-pong-server:$GITHUB_SHA"
+
+      - name: Build and publish www
+        working-directory: ./random-server
+        run: |-
+          docker build --tag "kuzn2k/random-server:$GITHUB_SHA" .
+          docker push "kuzn2k/random-server:$GITHUB_SHA"
+
+      - name: Build and publish log-output
+        working-directory: ./log-output
+        run: |-
+          docker build --tag "kuzn2k/log-output:$GITHUB_SHA" .
+          docker push "kuzn2k/log-output:$GITHUB_SHA"
+
+      - name: Set up Kustomize
+        uses: imranismail/setup-kustomize@v2
+
+      - name: Use right image
+        working-directory: ./app4.7
+        run: |-
+          kustomize edit set image PROJECT/WWW=kuzn2k/random-server:$GITHUB_SHA
+          kustomize edit set image PROJECT/BACKEND=kuzn2k/ping-pong-server:$GITHUB_SHA
+          kustomize edit set image PROJECT/LOGOUTPUT=kuzn2k/log-output:$GITHUB_SHA
+
+      - name: commit kustomization.yaml to GitHub
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: './app4.7/kustomization.yaml'
+          message: New version released ${{ github.sha }}

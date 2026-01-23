@@ -52,3 +52,4 @@
 - [4.4.] (https://github.com/kuzn2k/moockubernetes/tree/4.4/app4.4)
 - [4.5.] (https://github.com/kuzn2k/moockubernetes/tree/4.5/todo-app)
 - [4.6.] (https://github.com/kuzn2k/moockubernetes/tree/4.6/todo-app)
+- [4.7.] (https://github.com/kuzn2k/moockubernetes/tree/4.7/app4.7)
