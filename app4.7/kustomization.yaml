@@ -14,10 +14,10 @@ resources:
 images:
 - name: PROJECT/BACKEND
   newName: kuzn2k/ping-pong-server
-  newTag: 463d629fe1a9bd9fe8cb17f893ab8108854a2d56
+  newTag: 16da861910558993685e5b00265f63d33370402d
 - name: PROJECT/LOGOUTPUT
   newName: kuzn2k/log-output
-  newTag: 463d629fe1a9bd9fe8cb17f893ab8108854a2d56
+  newTag: 16da861910558993685e5b00265f63d33370402d
 - name: PROJECT/WWW
   newName: kuzn2k/random-server
-  newTag: 463d629fe1a9bd9fe8cb17f893ab8108854a2d56
+  newTag: 16da861910558993685e5b00265f63d33370402d
