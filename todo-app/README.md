@@ -5,7 +5,7 @@
 ../update-cloud-permissions.sh
 ````
 
-This also install and configures ArgoCD and two applications: Log and TODO
+This also installs and configures ArgoCD. Config manifests are pulled from the config repo.
 
 ## Build app (optional, no ArgoCD pipeline)
 

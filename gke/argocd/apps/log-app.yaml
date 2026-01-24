@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/kuzn2k/moockubernetes.git
+    repoURL: https://github.com/kuzn2k/moockubernetes-configs.git
     targetRevision: main
-    path: app4.7
+    path: log-app
   destination:
     server: https://kubernetes.default.svc
     namespace: exercises

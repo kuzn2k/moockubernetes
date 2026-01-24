@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/kuzn2k/moockubernetes.git
+    repoURL: https://github.com/kuzn2k/moockubernetes-configs.git
     targetRevision: main
-    path: gke/argocd/apps
+    path: argocd/apps
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd

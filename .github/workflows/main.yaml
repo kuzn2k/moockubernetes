@@ -20,6 +20,7 @@ env:
   IMAGE_BACKUP: todo-backup
   IMAGE_BROADCASTER: broadcaster
   BRANCH: ${{ github.ref_name }}
+  CONFIG_REPO: kuzn2k/moockubernetes-configs
 
 jobs:
   build-publish-deploy-staging:
@@ -30,6 +31,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout config repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.CONFIG_REPO }}
+          path: config-repo
+          token: ${{ secrets.CONFIG_REPO_TOKEN }}
 
       - uses: google-github-actions/auth@v2
         with:
@@ -102,7 +110,7 @@ jobs:
         uses: imranismail/setup-kustomize@v2.1.0
 
       - name: Use right image
-        working-directory: ./todo-app/overlays/staging
+        working-directory: ./config-repo/todo-app/overlays/staging
         run: |-
           kustomize edit set image PROJECT/WWW=$IMAGE_WWW_TAG
           kustomize edit set image PROJECT/BACKEND=$IMAGE_BACKEND_TAG
@@ -111,12 +119,14 @@ jobs:
           kustomize edit set image PROJECT/BROADCASTER=$IMAGE_BROADCASTER_TAG
 
       - name: Refresh from origin
+        working-directory: ./config-repo
         run: git pull
 
-      - name: commit kustomization.yaml to GitHub
+      - name: Commit config repo changes
         uses: EndBug/add-and-commit@v9
         with:
           add: './todo-app/overlays/staging/kustomization.yaml'
+          cwd: ./config-repo
           message: Update staging images for ${{ github.sha }} [skip ci]
 
   build-publish-deploy-production:
@@ -127,6 +137,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout config repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.CONFIG_REPO }}
+          path: config-repo
+          token: ${{ secrets.CONFIG_REPO_TOKEN }}
 
       - uses: google-github-actions/auth@v2
         with:
@@ -200,12 +217,13 @@ jobs:
 
       - name: Switch to main for overlay update
         run: |-
+          cd config-repo
           git fetch origin main
           git checkout main
           git pull
 
       - name: Use right image
-        working-directory: ./todo-app/overlays/production
+        working-directory: ./config-repo/todo-app/overlays/production
         run: |-
           kustomize edit set image PROJECT/WWW=$IMAGE_WWW_TAG
           kustomize edit set image PROJECT/BACKEND=$IMAGE_BACKEND_TAG
@@ -213,36 +231,14 @@ jobs:
           kustomize edit set image PROJECT/BACKUP=$IMAGE_BACKUP_TAG
           kustomize edit set image PROJECT/BROADCASTER=$IMAGE_BROADCASTER_TAG
 
-      - name: commit kustomization.yaml to GitHub
+      - name: Refresh from origin
+        working-directory: ./config-repo
+        run: git pull
+
+      - name: Commit config repo changes
         uses: EndBug/add-and-commit@v9
         with:
           add: './todo-app/overlays/production/kustomization.yaml'
+          cwd: ./config-repo
           message: Update production images for ${{ github.ref_name }} [skip ci]
 
-  cleanup-namespace:
-    if: github.event_name == 'delete' && github.event.ref_type == 'branch'
-    name: Cleanup Namespace on Branch Delete
-    runs-on: ubuntu-latest
-    steps:
-      - uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GKE_SA_KEY }}'
-
-      - name: 'Set up Cloud SDK'
-        uses: google-github-actions/setup-gcloud@v2
-
-      - name: 'Get GKE credentials'
-        uses: 'google-github-actions/get-gke-credentials@v2'
-        with:
-          cluster_name: '${{ env.GKE_CLUSTER }}'
-          project_id: '${{ env.PROJECT_ID }}'
-          location: '${{ env.GKE_ZONE }}'
-
-      - name: Delete Kubernetes Namespace
-        run: |
-          if [ "${{ github.event.ref }}" = "main" ]; then
-            NAMESPACE="project"
-          else
-            NAMESPACE="${{ github.event.ref }}"
-          fi
-          kubectl delete namespace $NAMESPACE --ignore-not-found

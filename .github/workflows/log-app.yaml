@@ -3,6 +3,9 @@ name: Build and publish Log application
 on:
   push:
 
+env:
+  CONFIG_REPO: kuzn2k/moockubernetes-configs
+
 jobs:
   build-publish:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') && !contains(github.event.head_commit.message, '[skip ci]')
@@ -12,6 +15,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout config repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.CONFIG_REPO }}
+          path: config-repo
+          token: ${{ secrets.CONFIG_REPO_TOKEN }}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -42,17 +52,19 @@ jobs:
         uses: imranismail/setup-kustomize@v2
 
       - name: Use right image
-        working-directory: ./app4.7
+        working-directory: ./config-repo/log-app
         run: |-
           kustomize edit set image PROJECT/WWW=kuzn2k/random-server:$GITHUB_SHA
           kustomize edit set image PROJECT/BACKEND=kuzn2k/ping-pong-server:$GITHUB_SHA
           kustomize edit set image PROJECT/LOGOUTPUT=kuzn2k/log-output:$GITHUB_SHA
 
       - name: Refresh from origin
+        working-directory: ./config-repo
         run: git pull
 
-      - name: commit kustomization.yaml to GitHub
+      - name: Commit config repo changes
         uses: EndBug/add-and-commit@v9
         with:
-          add: './app4.7/kustomization.yaml'
+          add: './log-app/kustomization.yaml'
+          cwd: ./config-repo
           message: New version of Log output released ${{ github.sha }} [skip ci]
