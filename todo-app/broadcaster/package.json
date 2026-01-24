@@ -1,6 +1,6 @@
 {
   "name": "broadcaster",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Todo event broadcaster to Telegram",
   "main": "broadcaster.js",
   "private": true,

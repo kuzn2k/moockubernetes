@@ -23,8 +23,8 @@ docker build -t kuzn2k/todo-reminder:1.0.0 .
 docker push kuzn2k/todo-reminder:1.0.0
 
 cd ../broadcaster
-docker build -t kuzn2k/broadcaster:1.0.0 .
-docker push kuzn2k/broadcaster:1.0.0
+docker build -t kuzn2k/broadcaster:1.0.1 .
+docker push kuzn2k/broadcaster:1.0.1
 
 cd ../backup-job
 docker build -t kuzn2k/backup-job:1.0.0 .
@@ -36,12 +36,13 @@ docker push kuzn2k/backup-job:1.0.0
 ### Manual deployment (without ArgoCD)
 
 ````bash
-export SOPS_AGE_KEY_FILE="$(pwd)/secrets/key.txt"
-kustomize build . --enable-alpha-plugins --enable-exec | kubectl apply -f -
+export SOPS_AGE_KEY_FILE="$(pwd)/base/secrets/key.txt"
+cat images.patch >> base/kustomization.yaml
+kustomize build base --enable-alpha-plugins --enable-exec | kubectl apply -f -
 ````
 ### ArgoCD pipeline
 
-Just wait to rollout finishing after pust to branch 'main' a new vervion of TODO App
+Just wait to rollout finishing after pushing to branch 'main' or making a tag a new vervion of TODO App
 
 ## Open TODO page
 
@@ -59,4 +60,3 @@ The App sends notification of TODO creating/updating in to Telegram's @moocdevop
 ````bash
 ../gke/remove-cluster.sh
 ````
-

@@ -1,10 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: project
   name: broadcaster
 spec:
-  replicas: 6
+  replicas: 1
   selector:
     matchLabels:
       app: broadcaster
@@ -23,7 +22,7 @@ spec:
               memory: "25Mi"
             limits:
               cpu: "150m"
-              memory: "100Mi"
+              memory: "50Mi"
           livenessProbe:
             initialDelaySeconds: 10
             periodSeconds: 15

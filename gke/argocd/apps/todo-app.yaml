@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: todo-app-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kuzn2k/moockubernetes.git
+    targetRevision: HEAD
+    path: todo-app/overlays/staging
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: todo-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: todo-app-production
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/kuzn2k/moockubernetes.git
+    targetRevision: HEAD
+    path: todo-app/overlays/production
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: project
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

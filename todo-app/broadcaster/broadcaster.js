@@ -4,6 +4,8 @@ import { connect, StringCodec } from 'nats'
 const natsUrl = process.env.NATS_URL || 'nats://nats:4222'
 const natsSubject = process.env.NATS_SUBJECT || 'todos.events'
 const natsQueue = process.env.NATS_QUEUE || 'broadcaster'
+const broadcasterMode = (process.env.BROADCASTER_MODE || 'telegram').toLowerCase()
+const telegramEnabled = broadcasterMode !== 'log'
 const telegramToken = process.env.TELEGRAM_BOT_TOKEN
 const telegramChatId = process.env.TELEGRAM_CHAT_ID
 const healthPort = Number.parseInt(process.env.HEALTH_PORT || '8080', 10)
@@ -31,6 +33,10 @@ function formatMessage(payload) {
 }
 
 async function sendTelegramMessage(text) {
+  if (!telegramEnabled) {
+    console.log('[broadcaster] log-only:', text)
+    return
+  }
   const res = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -44,6 +50,7 @@ async function sendTelegramMessage(text) {
 }
 
 async function checkTelegramHealth() {
+  if (!telegramEnabled) return true
   if (!telegramToken) return false
   const now = Date.now()
   if (now - lastTelegramCheckAt < telegramCheckIntervalMs) {
@@ -77,7 +84,7 @@ function startHealthServer() {
     Promise.resolve()
       .then(async () => {
         const telegramOk = await checkTelegramHealth()
-        if (!natsConnected || !telegramOk) {
+        if (!natsConnected || (telegramEnabled && !telegramOk)) {
           res.statusCode = 500
           res.end('unhealthy')
           return
@@ -97,7 +104,7 @@ function startHealthServer() {
 }
 
 async function run() {
-  if (!telegramToken || !telegramChatId) {
+  if (telegramEnabled && (!telegramToken || !telegramChatId)) {
     console.error('Missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID')
     process.exit(1)
   }

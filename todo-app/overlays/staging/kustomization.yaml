@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+namespace: todo-staging
+namePrefix: stage-
+images:
+  - name: PROJECT/WWW
+    newName: kuzn2k/todo-server:1.0.7
+  - name: PROJECT/BACKEND
+    newName: kuzn2k/todo-backend:1.0.8
+  - name: PROJECT/REMINDER
+    newName: kuzn2k/todo-reminder:1.0.0
+  - name: PROJECT/BACKUP
+    newName: kuzn2k/backup-job:1.0.0
+  - name: PROJECT/BROADCASTER
+    newName: kuzn2k/broadcaster:1.0.1
+patches:
+  - path: patch-broadcaster-log-only.yaml
+  - path: patch-backup-suspend.yaml
+  - path: patch-config-nats.yaml
+  - path: patch-config-urls.yaml
+  - path: patch-route-refs.yaml

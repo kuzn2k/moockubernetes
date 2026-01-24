@@ -1,7 +1,6 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  namespace: project
   name: todo-gateway
 spec:
   gatewayClassName: gke-l7-global-external-managed

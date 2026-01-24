@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todo-app-config
+data:
+  db_url: "prod-todo-postgres-svc"
+  backend_probe_url: "http://prod-todo-bc-svc:2345/healthz"

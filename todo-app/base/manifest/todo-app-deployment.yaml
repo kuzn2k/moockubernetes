@@ -1,21 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: project
-  name: todo-backend
+  name: todo-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: todo-backend
+      app: todo-server
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
   template:
     metadata:
       labels:
-        app: todo-backend
+        app: todo-server
     spec:
+      volumes:
+        - name: shared-files
+          persistentVolumeClaim:
+            claimName: app-storage-claim    
       containers:
         - name: app
-          image: PROJECT/BACKEND
+          image: PROJECT/WWW
           imagePullPolicy: Always
           resources:
             requests:
@@ -30,6 +37,9 @@ spec:
             httpGet:
                path: /healthz
                port: 3000          
+          volumeMounts:
+            - name: shared-files
+              mountPath: /var/tmp/mooc/files          
           env:
             - name: PORT
               value: "3000"
@@ -38,41 +48,46 @@ spec:
                 configMapKeyRef:
                   name: todo-app-config
                   key: todos_url
-            - name: DB_URL
+            - name: IMAGE_URL
               valueFrom:
                 configMapKeyRef:
                   name: todo-app-config
-                  key: db_url
-            - name: DB_PORT
+                  key: image_url
+            - name: DATA_ROOT
               valueFrom:
                 configMapKeyRef:
                   name: todo-app-config
-                  key: db_port
-            - name: DB_USER
+                  key: data_root  
+            - name: TMP_IMAGE_FILE
               valueFrom:
                 configMapKeyRef:
                   name: todo-app-config
-                  key: db_user
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: todo-app-secret
-                  key: db_password
-            - name: DB_DATABASE
+                  key: tmp_image_file
+            - name: IMAGE_SERVICE_URL
               valueFrom:
                 configMapKeyRef:
                   name: todo-app-config
-                  key: db_database
-            - name: NATS_URL
+                  key: image_service_url
+            - name: IMAGE_SIZE
               valueFrom:
                 configMapKeyRef:
                   name: todo-app-config
-                  key: nats_url
-            - name: NATS_SUBJECT
+                  key: image_size
+            - name: MAX_TODO_LENGTH
               valueFrom:
                 configMapKeyRef:
                   name: todo-app-config
-                  key: nats_subject
+                  key: max_todo_length
+            - name: REFRESH_TIME
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-config
+                  key: refresh_time
+            - name: BACKEND_PROBE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: todo-app-config
+                  key: backend_probe_url
           ports:
-            - name: todo-bc-port
+            - name: todo-port
               containerPort: 3000

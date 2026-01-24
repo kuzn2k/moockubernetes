@@ -1,7 +1,6 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  namespace: project
   name: todo-reminder-job
 spec:
   schedule: "@hourly"
@@ -44,7 +43,6 @@ spec:
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  namespace: project
   name: todo-postgres-backup
 spec:
   schedule: "0 0 * * *"

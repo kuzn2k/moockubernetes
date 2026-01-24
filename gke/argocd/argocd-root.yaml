@@ -1,17 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: todo-app
+  name: argocd-apps
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/kuzn2k/moockubernetes.git
     targetRevision: main
-    path: todo-app
+    path: gke/argocd/apps
   destination:
     server: https://kubernetes.default.svc
-    namespace: project
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
