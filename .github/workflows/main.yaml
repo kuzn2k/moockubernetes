@@ -1,4 +1,4 @@
-name: Release application
+name: Release TODO application
 
 on:
   push:
@@ -23,7 +23,7 @@ env:
 
 jobs:
   build-publish-deploy:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/')
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') && !contains(github.event.head_commit.message, '[skip ci]')
     name: Build, Publish and Deploy
     runs-on: ubuntu-latest
 
@@ -94,58 +94,30 @@ jobs:
         working-directory: ./todo-app/broadcaster
         run: docker build --tag $IMAGE_BROADCASTER_TAG .
 
-      - name: Publish BACKUP
+      - name: Publish BROADCASTER
         working-directory: ./todo-app/broadcaster
         run: docker push $IMAGE_BROADCASTER_TAG
 
       - name: Set up Kustomize
         uses: imranismail/setup-kustomize@v2.1.0
 
-      - name: Install sops
-        run: |
-          set -euo pipefail
-          SOPS_VER=3.11.0
-          curl -L -o /usr/local/bin/sops \
-            https://github.com/getsops/sops/releases/download/v${SOPS_VER}/sops-v${SOPS_VER}.linux.amd64
-          chmod +x /usr/local/bin/sops
-          sops --version
-
-      - name: Install ksops and register Kustomize plugin
-        run: |
-          set -euo pipefail
-
-          curl -s https://raw.githubusercontent.com/viaduct-ai/kustomize-sops/master/scripts/install-ksops-archive.sh | bash
-
-          export KUSTOMIZE_PLUGIN_HOME="$HOME/.config/kustomize/plugin"
-          mkdir -p "$KUSTOMIZE_PLUGIN_HOME/viaduct.ai/v1/ksops"
-          cp /usr/local/bin/ksops "$KUSTOMIZE_PLUGIN_HOME/viaduct.ai/v1/ksops/ksops"
-          chmod +x "$KUSTOMIZE_PLUGIN_HOME/viaduct.ai/v1/ksops/ksops"
-
-          ls -la "$KUSTOMIZE_PLUGIN_HOME/viaduct.ai/v1/ksops"
-
-      - name: Deploy
+      - name: Use right image
         working-directory: ./todo-app
-        env:
-          KUSTOMIZE_PLUGIN_HOME: ${{ env.HOME }}/.config/kustomize/plugin
         run: |-
-          if [ "${GITHUB_REF#refs/heads/}" = "main" ]; then
-            NAMESPACE="project"
-          else
-            NAMESPACE="${GITHUB_REF#refs/heads/}"
-          fi
           kustomize edit set image PROJECT/WWW=$IMAGE_WWW_TAG
           kustomize edit set image PROJECT/BACKEND=$IMAGE_BACKEND_TAG
           kustomize edit set image PROJECT/REMINDER=$IMAGE_REMINDER_TAG
           kustomize edit set image PROJECT/BACKUP=$IMAGE_BACKUP_TAG
-          kubectl create namespace $NAMESPACE || true
-          kubectl config set-context --current --namespace=$NAMESPACE
-          kustomize edit set namespace $NAMESPACE
-          kustomize build . --enable-alpha-plugins --enable-exec | kubectl apply -f -
-          kubectl rollout status deployment $SERVICE_WWW
-          kubectl rollout status deployment $SERVICE_BACKEND
-          kubectl get services -o wide
-          kubectl get pod -o wide
-          kubectl get gateway -o wide
+          kustomize edit set image PROJECT/BROADCASTER=$IMAGE_BROADCASTER_TAG
+
+      - name: Refresh from origin
+        run: git pull
+
+      - name: commit kustomization.yaml to GitHub
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: './todo-app/kustomization.yaml'
+          message: New version of TODO App released ${{ github.sha }} [skip ci]        
 
   cleanup-namespace:
     if: github.event_name == 'delete' && github.event.ref_type == 'branch'

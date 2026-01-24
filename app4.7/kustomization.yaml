@@ -12,12 +12,9 @@ resources:
 - manifest/route.yaml
   
 images:
-- name: PROJECT/BACKEND
-  newName: kuzn2k/ping-pong-server
-  newTag: f3b3be40462ab270c6229f3b6105d5b7090221ab
-- name: PROJECT/LOGOUTPUT
-  newName: kuzn2k/log-output
-  newTag: f3b3be40462ab270c6229f3b6105d5b7090221ab
-- name: PROJECT/WWW
-  newName: kuzn2k/random-server
-  newTag: f3b3be40462ab270c6229f3b6105d5b7090221ab
+  - name: PROJECT/WWW
+    newName: kuzn2k/random-server:1.0.8
+  - name: PROJECT/BACKEND
+    newName: kuzn2k/ping-pong-server:1.0.7
+  - name: PROJECT/LOGOUTPUT
+    newName: kuzn2k/log-output:1.0.1

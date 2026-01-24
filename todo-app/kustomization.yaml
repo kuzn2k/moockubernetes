@@ -15,7 +15,7 @@ resources:
   - manifest/cronjobs.yaml
   - manifest/gateway.yaml
   - manifest/route.yaml
-  
+    
 images:
   - name: PROJECT/WWW
     newName: kuzn2k/todo-server:1.0.7
@@ -27,5 +27,9 @@ images:
     newName: kuzn2k/backup-job:1.0.0  
   - name: PROJECT/BROADCASTER
     newName: kuzn2k/broadcaster:1.0.0
+
 generators:
-  - secrets/generator.yaml
+- ./secrets/ksops.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true

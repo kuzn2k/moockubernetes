@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  namespace: argocd
+spec:
+  template:
+    spec:
+      volumes:
+        - name: custom-tools
+          emptyDir: {}
+        - name: sops-age
+          secret:
+            secretName: sops-age
+      initContainers:
+        - name: install-ksops
+          image: viaductoss/ksops:v4.1.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Installing KSOPS...";
+              KSOPS_PATH="$(command -v ksops || true)";
+              if [ -z "$KSOPS_PATH" ]; then
+                echo "ksops not found in image";
+                exit 1;
+              fi
+              cp "$KSOPS_PATH" /custom-tools/ksops;
+              echo "Done.";
+          volumeMounts:
+            - name: custom-tools
+              mountPath: /custom-tools
+      containers:
+        - name: argocd-repo-server
+          env:
+            - name: XDG_CONFIG_HOME
+              value: /.config
+            - name: SOPS_AGE_KEY_FILE
+              value: /.config/sops/age/keys.txt
+          volumeMounts:
+            - name: custom-tools
+              mountPath: /usr/local/bin/ksops
+              subPath: ksops
+            - name: sops-age
+              mountPath: /.config/sops/age

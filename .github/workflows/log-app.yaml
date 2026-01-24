@@ -5,6 +5,7 @@ on:
 
 jobs:
   build-publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/') && !contains(github.event.head_commit.message, '[skip ci]')
     name: Build, Push, Release
     runs-on: ubuntu-latest
 
@@ -47,8 +48,11 @@ jobs:
           kustomize edit set image PROJECT/BACKEND=kuzn2k/ping-pong-server:$GITHUB_SHA
           kustomize edit set image PROJECT/LOGOUTPUT=kuzn2k/log-output:$GITHUB_SHA
 
+      - name: Refresh from origin
+        run: git pull
+
       - name: commit kustomization.yaml to GitHub
         uses: EndBug/add-and-commit@v9
         with:
           add: './app4.7/kustomization.yaml'
-          message: New version of Log output released ${{ github.sha }}
+          message: New version of Log output released ${{ github.sha }} [skip ci]
