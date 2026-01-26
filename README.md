@@ -55,4 +55,10 @@
 - [4.7.] (https://github.com/kuzn2k/moockubernetes/tree/4.7/app4.7)
 - [4.8.] (https://github.com/kuzn2k/moockubernetes/tree/4.8/todo-app)
 - [4.9.] (https://github.com/kuzn2k/moockubernetes/tree/4.9/todo-app)
-- [4.10.] configuration (https://github.com/kuzn2k/moockubernetes-configs/tree/4.10) + code (https://github.com/kuzn2k/moockubernetes/tree/4.10/todo-app) + 
+- [4.10.] configuration (https://github.com/kuzn2k/moockubernetes-configs/tree/4.10) + code (https://github.com/kuzn2k/moockubernetes/tree/4.10/todo-app)
+
+## Chapter 6
+
+- [5.1.] (https://github.com/kuzn2k/moockubernetes/tree/5.1/dummysite)
+
+
