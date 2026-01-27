@@ -1,7 +1,7 @@
 {
-  "name": "random-server",
+  "name": "greeter-server",
   "version": "1.0.9",
-  "description": "Random string Server for MOOC's exercises (healthcheck)",
+  "description": "Greeter Server for MOOC's exercises",
   "private": true,
   "type": "module",
   "scripts": {

@@ -8,6 +8,12 @@ const DATA_FILE = path.join(DATA_DIR, 'random.txt')
 const CONFIG_DIR = path.resolve(new URL('.', import.meta.url).pathname, '/config')
 const INFO_FILE = path.join(CONFIG_DIR, 'information.txt')
 
+const greetingHost = process.env.GREETING_HOST || 'http://greeting-svc:2345'
+const greetingPath = process.env.GREETING_PATH || '/greeting'
+
+const pingpongHost = process.env.PINGPONG_HOST || 'http://ping-pong-service-svc:2345'
+const pingPongPath = process.env.PINGPONG_PATH || '/pings'
+
 let isPingsReady = false
 
 async function ensureDataDir() {
@@ -34,7 +40,8 @@ async function loadInformationFile() {
 
 async function checkPings() {
   try {
-    const res = await fetch("http://ping-pong-service-svc:2345/healthz")
+    const url = new URL('healthz', pingpongHost)
+    const res = await fetch(url)
     if (!res.ok) {
       fastify.log.error('Pings is not ready')
     } else {
@@ -53,7 +60,8 @@ async function checkPings() {
 async function loadCount() {
   if (isPingsReady) {
     try {
-      const res = await fetch("http://ping-pong-service-svc:2345/pings")
+      const url = new URL(pingPongPath, pingpongHost)
+      const res = await fetch(url)
       if (!res.ok) {
         fastify.log.error(`Failed fetching pings: ${res.status} ${res.statusText}`)
         return null
@@ -66,6 +74,22 @@ async function loadCount() {
     }
   }
   return null
+}
+
+async function loadGreeting() {
+  try {
+    const url = new URL(greetingPath, greetingHost)
+    const res = await fetch(url)
+    if (!res.ok) {
+      fastify.log.error(`Failed fetching greeting: ${res.status} ${res.statusText}`)
+      return null
+    }
+    const text = await res.text()
+    return text.trim() || null
+  } catch (err) {
+    fastify.log.error(err)
+    return null
+  }
 }
 
 function getTimestampString(hash) {
@@ -88,7 +112,8 @@ fastify.get('/', async function (request, reply) {
   const rs = await loadRandomHash()
   const count = await loadCount()
   const infoText = await loadInformationFile()
-  const message = `file content: ${infoText}\nenv variable: MESSAGE=${process.env.MESSAGE || 'N/A'}\n${getTimestampString(rs)}.\nPing / Pongs: ${count}`
+  const greeting = await loadGreeting()
+  const message = `file content: ${infoText}\nenv variable: MESSAGE=${process.env.MESSAGE || 'N/A'}\n${getTimestampString(rs)}.\nPing / Pongs: ${count}\nGreetings: ${greeting}`
   reply.send(message)
 })
 

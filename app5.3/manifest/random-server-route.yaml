@@ -1,0 +1,41 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  namespace: exercises
+  name: random-server-route
+spec:
+  parentRefs:
+  - name: random-server-gateway
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: random-service-svc
+      port: 2345
+  - matches:
+    - path:
+        type: Exact
+        value: /greeting
+    backendRefs:
+    - name: greeter-v1-svc
+      port: 2345
+      weight: 75
+    - name: greeter-v2-svc
+      port: 2345
+      weight: 25
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /pingpong
+    - path:
+        type: PathPrefix
+        value: /pings
+    - path:
+        type: PathPrefix
+        value: /healthz
+    backendRefs:
+    - name: ping-pong-service-svc
+      port: 2345
+
