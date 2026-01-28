@@ -64,4 +64,5 @@
 - [5.3.] (https://github.com/kuzn2k/moockubernetes/tree/5.3/app5.3)
 - [5.4.] (https://github.com/kuzn2k/moockubernetes/tree/5.4/app5.4)
 - [5.6.] (https://github.com/kuzn2k/moockubernetes/tree/5.6/knative)
+- [5.7.] (https://github.com/kuzn2k/moockubernetes/tree/5.7/app5.7)
 

@@ -1,0 +1,23 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: ping-pong-serverless
+spec:
+  template:
+    spec:
+      containers:
+      - image: kuzn2k/ping-pong-server:1.0.9
+        ports:
+          - containerPort: 8080
+        imagePullPolicy: Always
+        env:
+          - name: PGHOST
+            value: "postgress-svc"
+          - name: PGPORT
+            value: "5432"
+          - name: PGUSER
+            value: "postgres"
+          - name: PGPASSWORD
+            value: ""
+          - name: PGDATABASE
+            value: "postgres"
