@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: exercises
+  name: wiki-stub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wiki-stub
+  template:
+    metadata:
+      labels:
+        app: wiki-stub
+    spec:
+      volumes:
+        - name: site-content
+          emptyDir: {}
+      containers:
+        - name: wiki-stub
+          image: nginx:1.27-alpine
+          volumeMounts:
+          - name: site-content
+            mountPath: /usr/share/nginx/html
+          ports:
+            - containerPort: 80
+        - name: wiki-stub-refresh-index-page
+          image: busybox
+          volumeMounts:
+          - name: site-content
+            mountPath: /usr/share/nginx/html
+          command: ["sh", "-c"]
+          args:
+            - |
+                echo "starting loop";
+                while true; do
+                  sleep "$((300 + ($(od -An -N2 -tu2 /dev/urandom | tr -d ' ') % 601)))";
+                  echo "Refresh index.html";
+                  wget -O /usr/share/nginx/html/index.html https://en.wikipedia.org/wiki/Special:Random
+                done
+      initContainers:
+      - name: wiki-stub-init-index-page
+        image: busybox
+        volumeMounts:
+        - name: site-content
+          mountPath: /usr/share/nginx/html
+        command: ["sh", "-c"]
+        args:
+          - |
+              wget -O /usr/share/nginx/html/index.html https://en.wikipedia.org/wiki/Kubernetes
